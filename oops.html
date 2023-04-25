@@ -1,0 +1,311 @@
+<!doctype html>
+<html class="no-js" lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>Oops, I Did It Again: Automatically Encrypting Secrets</title>
+  <meta name="description" content="Let's automate the encryption of secrets, even for publicly stored remote git repositories.">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content "index, follow">
+
+  <meta property="og:title" content="Oops, I Did It Again: Automatically Encrypting Secrets">
+  <meta property="og:url" content="https://zev.averba.ch/oops">
+  <meta property="og:type" content="website">
+
+  <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+  <link href="/static/prism-dark.css" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/style.css">
+  <meta name="theme-color" content="#209cee">
+  <link rel="canonical" href="https://zev.averba.ch/oops" />
+  
+</head>
+<body>
+    <nav>
+    <div id="logo">
+      <a href="https://zev.averba.ch" class="logo">
+        Zev Averbach:
+      </a>
+      
+      <h2 class="title">Oops, I Did It Again: Automatically Encrypting Secrets</h2>
+      
+    </div>
+  </nav>
+  <div id="body">
+<p>Got a heads-up from OpenAI that they&#39;d invalidated my token because I&#39;d exposed it publicly! Oops. This isn&#39;t the first time I&#39;ve done it, but this will be the first time I take a computational approach towards avoiding it.</p>
+<h3 id="first-damage-control">First: Damage Control</h3>
+<p>I shared three secret tokens actually, about 24 hours ago when I pushed an update of my <code>.bashrc</code> to a public repo. This repo was there for a long time, but I guess I&#39;d been careful about pushing anything sensitive to it. To their credit, as stated above OpenAI alerted me before anyone else, and in fact Netlify and GitHub still haven&#39;t detected it. Not that it&#39;s their job! But kudos in any case to OpenAI. </p>
+<p>I removed all the tokens from the other two providers, and made the <code>.bashrc</code> repo private for now.</p>
+<h3 id="next-encryption">Next: Encryption</h3>
+<p>I&#39;d first heard of keeping secrets in public repos by encrypting them in <a href="https://frontendmasters.com/courses/developer-productivity/store-ssh-auth-keys-with-ansible-vault/">this section</a> of ThePrimeagen&#39;s &quot;Developer Productivity&quot; course, but I clearly haven&#39;t put that into action. The command for encrypting or decrypting is</p>
+<pre><code class="language-bash">$ ansible-vault &lt;encrypt/decrypt&gt; &lt;filename&gt;
+</code></pre>
+<p>Easy enough! As a bonus, the algorithm it uses is probably quantum-safe. 🤖 </p><p>There are several other viable options for two-way encryption of secrets, Mozilla&#39;s SOPS being one, FYI.</p>
+<h3 id="alerts-for-unencrypted-secret-files">Alerts For Unencrypted Secret Files</h3>
+<p>Now, how to abort and alert when committing code which contains unencrypted secrets? <a href="https://devops.stackexchange.com/questions/16317/how-to-ansible-vault-files-as-they-are-commited-to-git?newreg=a7e3811180a7401ea428511549dd5a09">This DevOps StackExchange question</a> seems to be a good start. Let&#39;s see if I can get a <code>pre-commit</code> hook to do this for my <code>.bash_secret</code> file:</p>
+<pre><code class="language-bash">#!/bin/sh
+#
+# Put this file in .git/hooks/pre-commit
+# from https://devops.stackexchange.com/questions/16317/how-to-ansible-vault-files-as-they-are-committed-to-git?newreg=a7e3811180a7401ea428511549dd5a09
+
+set -o nounset
+
+FILE_PATTERN=&quot;.*secret.*\\|\\.env&quot;   # 👈 I&#39;ve also included a pattern for .env files
+ENCRYPTED_PATTERN=&quot;\\$ANSIBLE_VAULT&quot;
+
+is_encrypted() {
+  local file=$1
+  if ! git show :&quot;$file&quot; | grep --quiet &quot;^${ENCRYPTED_PATTERN}&quot;; then
+    echo &quot;Located a staged file that should be encrypted:\
+&gt; ${file}\
+&quot;
+    echo &quot;Please un-stage this file. If you are adding or updating this file, please encrypt it before staging.&quot;
+    echo &quot;Alternatively, you can git checkout the latest encrypted version of the file before committing.\
+&quot;
+    echo &quot;Remember... Only YOU Can Prevent Secret Leakage.&quot;
+    exit 1
+  fi
+}
+
+echo &quot;Running pre-commit checks...&quot;
+git diff --cached --name-only | grep &quot;${FILE_PATTERN}&quot; | while IFS= read -r line; do
+  is_encrypted &quot;${line}&quot;
+done
+</code></pre>
+<p>If I pop that in the repo where <code>.bash_secret</code> is and try to commit it without encrypting it first, it stops me and displays:</p>
+<pre><code class="language-bash">Running pre-commit checks...
+Located a staged file that should be encrypted:
+&gt; .bash_secret
+
+Please un-stage this file. If you are adding or updating this file, please encrypt it before staging.
+Alternatively, you can git checkout the latest encrypted version of the file before committing.
+
+Remember... Only YOU Can Prevent Secret Leakage.
+</code></pre>
+<p>That&#39;s pretty awesome! Let&#39;s make it a little more foolproof by making this pre-commit run for <em>all</em> commits to local repos:</p>
+<pre><code class="language-bash">$ mkdir ~/.githooks
+$ git config --global core.hooksPath ~/.githooks
+$ mv .git/hooks/pre-commit ~/.githooks
+$ chmod +x ~/.githooks/pre-commit
+</code></pre>
+<h3 id="automatically-encrypt-files-on-commit">Automatically Encrypt Files On Commit</h3>
+<p>How to automate the encryption of these secret files, though? There&#39;s no such automation in <a href="https://devops.stackexchange.com/a/16333/40029">the StackExchange answer</a>, but there is a bash script provided to encrypt or decrypt manually. What&#39;s more, there&#39;s an improved version of that script in <a href="https://warlord0blog.wordpress.com/2022/12/05/git-hooks/">this blog post</a>, the improvement being that it skips any already encrypted files which match the <code>FILE_PATTERN</code> instead of breaking out of the loop.</p>
+<p>Let&#39;s incorporate the relevant logic into our globally installed pre-commit hook:</p>
+<pre><code class="language-bash">#!/bin/sh
+# ...
+
+set -o nounset
+
+FILE_PATTERN=&quot;.*secret.*\\|\\.env&quot;
+ENCRYPTED_PATTERN=&quot;\\$ANSIBLE_VAULT&quot;
+
+encrypt_if_needed_then_add() {
+  local file=$1
+  if ! git show :&quot;$file&quot; | grep --quiet &quot;^${ENCRYPTED_PATTERN}&quot;; then
+    echo &quot;Located a staged file that should be encrypted:\
+&gt; ${file}\
+&quot;
+    encrypt $file
+    git add $file
+  fi
+}
+
+encrypt() {
+  local file=$1
+  echo &quot;$file&quot;;
+  password_type=--ask-vault-password
+  if [ -f &quot;$HOME/.vault_password&quot; ]
+  then
+      echo &quot;Using secret file&quot;
+      password_type=&quot;--vault-password-file $HOME/.vault_password&quot;
+  fi
+  ansible-vault encrypt $password_type $file
+}
+
+echo &quot;Running pre-commit checks...&quot;
+git diff --cached --name-only | grep &quot;${FILE_PATTERN}&quot; | while IFS= read -r line; do
+  encrypt_if_needed_then_add &quot;${line}&quot;
+done
+</code></pre>
+<p>This works beautifully on commit, and won&#39;t try to encrypt files which are already encrypted:</p>
+<pre><code class="language-bash">$ ls -a
+.        ..        .bash_secret    .env        .git        .gitignore
+
+$ cat .env  # 👈 let&#39;s say this one is already encrypted
+$ANSIBLE_VAULT;1.1;AES256
+30643665626462663736373366386138313966616234313939626563333833363439396530366633
+3763383837393934323861313138646137316362333231380a623530396135326536353062333534
+34333133383734623161636135616165653833306463336161353032376263316531666339666639
+3863663839323835370a333738303064623230653164616531343438386166353461613962626631
+3964
+
+$ cat .bash_secret  # 👈 and this one isn&#39;t
+export OPENAI_KEY=&quot;sk-hithisisntreallymykey0Kivelearnedmylesson&quot;
+
+$ git add --all &amp;&amp; git commit -m &quot;first&quot;
+Running pre-commit checks...
+Located a staged file that should be encrypted:
+&gt; .bash_secret
+
+.bash_secret
+Using secret file
+Encryption successful
+</code></pre>
+<h3 id="automatically-decrypt-files-after-commit">Automatically Decrypt Files After Commit</h3>
+<p>The pre-commit hook will work for making sure the secrets are encrypted, but I actually want to immediately decrypt those secrets once the commit is completed, so I can use them locally, modify them, etc. If I copy <code>pre-commit</code> to a file <code>post-commit</code> and make these changes, this should accomplish it:</p>
+<pre><code class="language-bash">#!/bin/sh
+# ...
+
+set -o nounset
+
+FILE_PATTERN=&quot;.*secret.*\\|\\.env&quot;
+ENCRYPTED_PATTERN=&quot;\\$ANSIBLE_VAULT&quot;
+
+decrypt_if_needed() {
+  local file=$1
+  if git show :&quot;$file&quot; | grep --quiet &quot;^${ENCRYPTED_PATTERN}&quot;; then
+    echo &quot;Located a committed file that should be decrypted:\
+&gt; ${file}\
+&quot;
+    decrypt $file
+  fi
+}
+
+decrypt() {
+  local file=$1
+  echo &quot;$file&quot;;
+  password_type=--ask-vault-password
+  if [ -f &quot;$HOME/.vault_password&quot; ]
+  then
+      echo &quot;Using secret file&quot;
+      password_type=&quot;--vault-password-file $HOME/.vault_password&quot;
+  fi
+  ansible-vault decrypt $password_type $file
+}
+
+echo &quot;Running post-commit checks...&quot;
+files=$(ls -a | grep &quot;${FILE_PATTERN}&quot;)
+for file in $files; do
+  echo $file
+  decrypt_if_needed $file
+done
+</code></pre>
+<p>Now, when <code>.bash_secret</code> is in its plaintext form, this is what happens on commit:</p>
+<pre><code class="language-bash">$ git add --all &amp;&amp; git commit -m &quot;first&quot;
+Running pre-commit checks...
+Located a staged file that should be encrypted:
+&gt; .bash_secret
+
+.bash_secret
+Using secret file
+Encryption successful
+
+Running post-commit checks...
+.bash_secret
+Located a commited file that should be decrypted:
+&gt; .bash_secret
+
+.bash_secret
+Using secret file
+Decryption successful
+[trunk 0798892] first
+
+$ git status
+On branch trunk
+Changes not staged for commit:
+  (use &quot;git add &lt;file&gt;...&quot; to update what will be committed)
+  (use &quot;git restore &lt;file&gt;...&quot; to discard changes in working directory)
+    modified:   .bash_secret
+
+no changes added to commit (use &quot;git add&quot; and/or &quot;git commit -a&quot;)
+
+$ cat .bash_secret
+export OPENAI_KEY=&quot;sk-hithisisntreallymykey0Kivelearnedmylesson&quot;
+</code></pre>
+<p>The secret file is unencrypted and there&#39;s an unstaged change to it. This is as expected, since the post-commit hook decrypted it. Not a 100% perfect solution since I'll constantly have unstaged changes showing for my secret files, but I&#39;m willing to live with it.</p>
+<h3 id="what-about-post-checkout-and-post-pull">What About Post-Checkout and Post-Pull?</h3>
+<p>One flaw I can&#39;t live with is that if I check out a different branch or commit of this repo, the secrets-containing files will be encrypted. This will also happen when pulling from a remote repo.</p>
+<p>I&#39;m <em>pretty sure</em> the quick solution for this is:</p>
+<pre><code class="language-bash">$ cp ~/.githooks/post-commit ~/.githooks/post-checkout &amp;&amp; cp ~/.githooks/post-commit ~/.githooks/post-merge
+</code></pre>
+<p>It works perfectly for checkout, but I haven&#39;t tested it for pull/merge yet.</p>
+<h3 id="the-end">The End</h3>
+<p>I think this will suffice for automatically encrypting secrets on commit. The biggest point of failure is <code>FILE_PATTERN</code>, which I&#39;ll have to be mindful of and modify as needed.</p>
+
+
+  <div id="about">
+  <img style="grid-row: span 2;" id='portrait' src="https://www.gravatar.com/avatar/fe783e04644862c30823614f31b9a996/?s=360" alt="smiley picture of shaven-head Zev">
+  <span id="about-text"><p>American programmer living in Switzerland. Constant learner, chess improver, speech-to-text. 🌼</p></span>
+  <div id="links">
+    <a title="Zev's résumé" href="https://www.dropbox.com/s/zbrwqgn688igce7/Zev_Averbach_Resume_2021.pdf?dl=0">
+      <svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd">
+          <style>
+        path {
+            fill: var(--my-svg-color);
+        }
+          </style>
+          <path d="M3 24h19v-23h-1v22h-18v1zm17-24h-18v22h18v-22zm-1 1h-16v20h16v-20zm-2 16h-12v1h12v-1zm0-3h-12v1h12v-1zm0-3h-12v1h12v-1zm-7.348-3.863l.948.3c-.145.529-.387.922-.725 1.178-.338.257-.767.385-1.287.385-.643 0-1.171-.22-1.585-.659-.414-.439-.621-1.04-.621-1.802 0-.806.208-1.432.624-1.878.416-.446.963-.669 1.642-.669.592 0 1.073.175 1.443.525.221.207.386.505.496.892l-.968.231c-.057-.251-.177-.449-.358-.594-.182-.146-.403-.218-.663-.218-.359 0-.65.129-.874.386-.223.258-.335.675-.335 1.252 0 .613.11 1.049.331 1.308.22.26.506.39.858.39.26 0 .484-.082.671-.248.187-.165.322-.425.403-.779zm3.023 1.78l-1.731-4.842h1.06l1.226 3.584 1.186-3.584h1.037l-1.734 4.842h-1.044z"/>
+      </svg>
+  </a>
+        
+  <a rel="me" href="https://recurse.social/@zev" title="Zev's Mastodon">
+    <svg height="24" width="24" xmlns="http://www.w3.org/2000/svg" viewBox="-0.41 0.22 747.62 801.4499999999999">
+	    <path d="M729.94 479.5c-10.96 56.4-98.17 118.12-198.34 130.08-52.23 6.23-103.66 11.96-158.49 9.44-89.68-4.1-160.45-21.4-160.45-21.4 0 8.73.54 17.04 1.62 24.81 11.66 88.52 87.76 93.82 159.84 96.29 72.76 2.49 137.55-17.94 137.55-17.94l2.99 65.79s-50.89 27.32-141.55 32.35c-50 2.75-112.07-1.26-184.37-20.39C31.94 737.02 4.97 569.86.85 400.26-.41 349.9.37 302.42.37 262.7.37 89.27 113.99 38.44 113.99 38.44 171.28 12.12 269.59 1.06 371.79.22h2.52c102.19.84 200.57 11.9 257.86 38.22 0 0 113.62 50.83 113.62 224.26 0 0 1.42 127.96-15.85 216.8"></path><path d="M611.77 276.16v209.99h-83.2V282.33c0-42.97-18.07-64.77-54.23-64.77-39.98 0-60.01 25.86-60.01 77.02v111.57h-82.71V294.58c0-51.16-20.04-77.02-60.01-77.02-36.16 0-54.24 21.8-54.24 64.77v203.82h-83.19V276.16c0-42.92 10.93-77.03 32.88-102.26 22.63-25.23 52.27-38.17 89.07-38.17 42.57 0 74.81 16.37 96.12 49.1l20.72 34.74 20.73-34.74c21.31-32.73 53.55-49.1 96.12-49.1 36.79 0 66.44 12.94 89.07 38.17 21.95 25.23 32.88 59.34 32.88 102.26z"></path>
+</svg>
+</a>
+    <a title="Zev's Github" href="https://github.com/zevaverbach">
+    <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" >
+    <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>
+</svg>
+  </div>
+</div>
+    <script>
+  function detectColorScheme(){
+      let theme="light";
+  
+      //local storage is used to override OS theme settings
+      if (localStorage.getItem("theme")){
+          if (localStorage.getItem("theme") == "dark"){
+               theme = "dark";
+          }
+      } else if(!window.matchMedia) {
+          //matchMedia method not supported
+          return false;
+      } else if(window.matchMedia("(prefers-color-scheme: dark)").matches) {
+          //OS theme setting detected as dark
+          theme = "dark";
+      }
+  
+      //dark theme preferred, set document with a `data-theme` attribute
+      if (theme=="dark") {
+           document.documentElement.setAttribute("data-theme", "dark");
+      }
+      //function that changes the theme, and sets a localStorage variable to track the theme between page loads
+      function switchTheme(e) {
+          if (e.target.checked) {
+          localStorage.setItem('theme', 'dark');
+          document.documentElement.setAttribute('data-theme', 'dark');
+          toggleSwitch.checked = true;
+          } else {
+          localStorage.setItem('theme', 'light');
+          document.documentElement.setAttribute('data-theme', 'light');
+          toggleSwitch.checked = false;
+          }    
+      }
+  
+      //identify the toggle switch HTML element
+      const toggleSwitch = document.querySelector('#theme-switch input[type="checkbox"]');
+  
+      //listener for changing themes
+      toggleSwitch.addEventListener('change', switchTheme, false);
+  
+      //pre-check the dark-theme checkbox if dark-theme is set
+      if (document.documentElement.getAttribute("data-theme") == "dark"){
+          toggleSwitch.checked = true;
+      }
+  }
+  detectColorScheme();
+  </script>
+  <script src="https://cdn.usefathom.com/script.js" data-site="LWJFWQJS" defer></script>
+  <script src="/static/prism-dark.js"></script>
+</body>
+</html>
