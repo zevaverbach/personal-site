@@ -39,7 +39,7 @@
 <p>I&#39;d first heard of keeping secrets in public repos by encrypting them in <a href="https://frontendmasters.com/courses/developer-productivity/store-ssh-auth-keys-with-ansible-vault/">this section</a> of ThePrimeagen&#39;s &quot;Developer Productivity&quot; course, but I clearly haven&#39;t put that into action. The command he uses for encrypting or decrypting is</p>
 <pre><code class="language-bash">$ ansible-vault &lt;encrypt/decrypt&gt; &lt;filename&gt;
 </code></pre>
-<p>after having <a href="https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html">installed `ansible`</a>. Easy enough! As a bonus, the algorithm it uses is probably quantum-safe. 🤖 </p><p>There are several other viable options for two-way encryption of secrets, Mozilla&#39;s SOPS being one, FYI.</p>
+<p>after having <a href="https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html">installed ansible</a>. Easy enough! As a bonus, the algorithm it uses is probably quantum-safe. 🤖 </p><p>There are several other viable options for two-way encryption of secrets, Mozilla&#39;s SOPS being one, FYI.</p>
 <h3 id="alerts-for-unencrypted-secret-files">Alerts For Unencrypted Secret Files</h3>
 <p>Now, how to abort and alert when committing code which contains unencrypted secrets? <a href="https://devops.stackexchange.com/questions/16317/how-to-ansible-vault-files-as-they-are-commited-to-git?newreg=a7e3811180a7401ea428511549dd5a09">This DevOps StackExchange question</a> seems to be a good start. Let&#39;s see if I can get a <code>pre-commit</code> hook to do this for my <code>.bashrc</code> file:</p>
 <pre><code class="language-bash">#!/bin/sh
