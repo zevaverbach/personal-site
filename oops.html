@@ -36,12 +36,12 @@
 <p>I shared three secret tokens actually, about 24 hours ago when I pushed an update of my <code>.bashrc</code> to a public repo. This repo was there for a long time, but I guess I&#39;d been careful about pushing anything sensitive to it. To their credit, as stated above OpenAI alerted me before anyone else, and in fact Netlify and GitHub still haven&#39;t detected it. Not that it&#39;s their job! But kudos in any case to OpenAI. </p>
 <p>I removed all the tokens from the other two providers, and made the <code>.bashrc</code> repo private for now.</p>
 <h3 id="next-encryption">Next: Encryption</h3>
-<p>I&#39;d first heard of keeping secrets in public repos by encrypting them in <a href="https://frontendmasters.com/courses/developer-productivity/store-ssh-auth-keys-with-ansible-vault/">this section</a> of ThePrimeagen&#39;s &quot;Developer Productivity&quot; course, but I clearly haven&#39;t put that into action. The command for encrypting or decrypting is</p>
+<p>I&#39;d first heard of keeping secrets in public repos by encrypting them in <a href="https://frontendmasters.com/courses/developer-productivity/store-ssh-auth-keys-with-ansible-vault/">this section</a> of ThePrimeagen&#39;s &quot;Developer Productivity&quot; course, but I clearly haven&#39;t put that into action. The command he uses for encrypting or decrypting is</p>
 <pre><code class="language-bash">$ ansible-vault &lt;encrypt/decrypt&gt; &lt;filename&gt;
 </code></pre>
-<p>Easy enough! As a bonus, the algorithm it uses is probably quantum-safe. 🤖 </p><p>There are several other viable options for two-way encryption of secrets, Mozilla&#39;s SOPS being one, FYI.</p>
+<p>after having <a href="https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html">installed `ansible`</a>. Easy enough! As a bonus, the algorithm it uses is probably quantum-safe. 🤖 </p><p>There are several other viable options for two-way encryption of secrets, Mozilla&#39;s SOPS being one, FYI.</p>
 <h3 id="alerts-for-unencrypted-secret-files">Alerts For Unencrypted Secret Files</h3>
-<p>Now, how to abort and alert when committing code which contains unencrypted secrets? <a href="https://devops.stackexchange.com/questions/16317/how-to-ansible-vault-files-as-they-are-commited-to-git?newreg=a7e3811180a7401ea428511549dd5a09">This DevOps StackExchange question</a> seems to be a good start. Let&#39;s see if I can get a <code>pre-commit</code> hook to do this for my <code>.bash_secret</code> file:</p>
+<p>Now, how to abort and alert when committing code which contains unencrypted secrets? <a href="https://devops.stackexchange.com/questions/16317/how-to-ansible-vault-files-as-they-are-commited-to-git?newreg=a7e3811180a7401ea428511549dd5a09">This DevOps StackExchange question</a> seems to be a good start. Let&#39;s see if I can get a <code>pre-commit</code> hook to do this for my <code>.bashrc</code> file:</p>
 <pre><code class="language-bash">#!/bin/sh
 #
 # Put this file in .git/hooks/pre-commit
@@ -49,7 +49,7 @@
 
 set -o nounset
 
-FILE_PATTERN=&quot;.*secret.*\\|\\.env&quot;   # 👈 I&#39;ve also included a pattern for .env files
+FILE_PATTERN=&quot;\\.bashrc\\|\\.env&quot;   # 👈 I&#39;ve also included a pattern for .env files
 ENCRYPTED_PATTERN=&quot;\\$ANSIBLE_VAULT&quot;
 
 is_encrypted() {
@@ -71,10 +71,10 @@ git diff --cached --name-only | grep &quot;${FILE_PATTERN}&quot; | while IFS= re
   is_encrypted &quot;${line}&quot;
 done
 </code></pre>
-<p>If I pop that in the repo where <code>.bash_secret</code> is and try to commit it without encrypting it first, it stops me and displays:</p>
+<p>If I pop that in the repo where <code>.bashrc</code> is and try to commit it without encrypting it first, it stops me and displays:</p>
 <pre><code class="language-bash">Running pre-commit checks...
 Located a staged file that should be encrypted:
-&gt; .bash_secret
+&gt; .bashrc
 
 Please un-stage this file. If you are adding or updating this file, please encrypt it before staging.
 Alternatively, you can git checkout the latest encrypted version of the file before committing.
@@ -95,7 +95,7 @@ $ chmod +x ~/.githooks/pre-commit
 
 set -o nounset
 
-FILE_PATTERN=&quot;.*secret.*\\|\\.env&quot;
+FILE_PATTERN=&quot;\\.bashrc\\|\\.env&quot;
 ENCRYPTED_PATTERN=&quot;\\$ANSIBLE_VAULT&quot;
 
 encrypt_if_needed_then_add() {
@@ -115,7 +115,6 @@ encrypt() {
   password_type=--ask-vault-password
   if [ -f &quot;$HOME/.vault_password&quot; ]
   then
-      echo &quot;Using secret file&quot;
       password_type=&quot;--vault-password-file $HOME/.vault_password&quot;
   fi
   ansible-vault encrypt $password_type $file
@@ -126,9 +125,9 @@ git diff --cached --name-only | grep &quot;${FILE_PATTERN}&quot; | while IFS= re
   encrypt_if_needed_then_add &quot;${line}&quot;
 done
 </code></pre>
-<p>This works beautifully on commit, and won&#39;t try to encrypt files which are already encrypted:</p>
+<p>I've also put the vault password in a new file `~/.vault_password` so I don't have to enter it for every `ansible-vault` command. This works beautifully on commit, and won&#39;t try to encrypt files which are already encrypted:</p>
 <pre><code class="language-bash">$ ls -a
-.        ..        .bash_secret    .env        .git        .gitignore
+.        ..        .bashrc    .env        .git        .gitignore
 
 $ cat .env  # 👈 let&#39;s say this one is already encrypted
 $ANSIBLE_VAULT;1.1;AES256
@@ -138,16 +137,15 @@ $ANSIBLE_VAULT;1.1;AES256
 3863663839323835370a333738303064623230653164616531343438386166353461613962626631
 3964
 
-$ cat .bash_secret  # 👈 and this one isn&#39;t
+$ cat .bashrc  # 👈 and this one isn&#39;t
 export OPENAI_KEY=&quot;sk-hithisisntreallymykey0Kivelearnedmylesson&quot;
 
 $ git add --all &amp;&amp; git commit -m &quot;first&quot;
 Running pre-commit checks...
 Located a staged file that should be encrypted:
-&gt; .bash_secret
+&gt; .bashrc
 
-.bash_secret
-Using secret file
+.bashrc
 Encryption successful
 </code></pre>
 <h3 id="automatically-decrypt-files-after-commit">Automatically Decrypt Files After Commit</h3>
@@ -157,7 +155,7 @@ Encryption successful
 
 set -o nounset
 
-FILE_PATTERN=&quot;.*secret.*\\|\\.env&quot;
+FILE_PATTERN=&quot;\\.bashrc\\|\\.env&quot;
 ENCRYPTED_PATTERN=&quot;\\$ANSIBLE_VAULT&quot;
 
 decrypt_if_needed() {
@@ -176,7 +174,6 @@ decrypt() {
   password_type=--ask-vault-password
   if [ -f &quot;$HOME/.vault_password&quot; ]
   then
-      echo &quot;Using secret file&quot;
       password_type=&quot;--vault-password-file $HOME/.vault_password&quot;
   fi
   ansible-vault decrypt $password_type $file
@@ -189,23 +186,21 @@ for file in $files; do
   decrypt_if_needed $file
 done
 </code></pre>
-<p>Now, when <code>.bash_secret</code> is in its plaintext form, this is what happens on commit:</p>
+<p>Now, when <code>.bashrc</code> is in its plaintext form, this is what happens on commit:</p>
 <pre><code class="language-bash">$ git add --all &amp;&amp; git commit -m &quot;first&quot;
 Running pre-commit checks...
 Located a staged file that should be encrypted:
-&gt; .bash_secret
+&gt; .bashrc
 
-.bash_secret
-Using secret file
+.bashrc
 Encryption successful
 
 Running post-commit checks...
-.bash_secret
+.bashrc
 Located a commited file that should be decrypted:
-&gt; .bash_secret
+&gt; .bashrc
 
-.bash_secret
-Using secret file
+.bashrc
 Decryption successful
 [trunk 0798892] first
 
@@ -214,11 +209,11 @@ On branch trunk
 Changes not staged for commit:
   (use &quot;git add &lt;file&gt;...&quot; to update what will be committed)
   (use &quot;git restore &lt;file&gt;...&quot; to discard changes in working directory)
-    modified:   .bash_secret
+    modified:   .bashrc
 
 no changes added to commit (use &quot;git add&quot; and/or &quot;git commit -a&quot;)
 
-$ cat .bash_secret
+$ cat .bashrc
 export OPENAI_KEY=&quot;sk-hithisisntreallymykey0Kivelearnedmylesson&quot;
 </code></pre>
 <p>The secret file is unencrypted and there&#39;s an unstaged change to it. This is as expected, since the post-commit hook decrypted it. Not a 100% perfect solution since I'll constantly have unstaged changes showing for my secret files, but I&#39;m willing to live with it.</p>
