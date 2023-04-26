@@ -88,10 +88,10 @@ $ mv .git/hooks/pre-commit ~/.githooks
 $ chmod +x ~/.githooks/pre-commit
 </code></pre>
 <h3 id="automatically-encrypt-files-on-commit">Automatically Encrypt Files On Commit</h3>
-<p>How to automate the encryption of these secret files, though? There&#39;s no such automation in <a href="https://devops.stackexchange.com/a/16333/40029">the StackExchange answer</a>, but there is a bash script provided to encrypt or decrypt manually. What&#39;s more, there&#39;s an improved version of that script in <a href="https://warlord0blog.wordpress.com/2022/12/05/git-hooks/">this blog post</a>, the improvement being that it skips any already encrypted files which match the <code>FILE_PATTERN</code> instead of breaking out of the loop.</p>
+<p>How to automate the encryption of these secret files, though? There&#39;s no such automation in <a href="https://devops.stackexchange.com/a/16333/40029">the StackExchange answer</a>, but there is a bash script provided to encrypt or decrypt manually. What&#39;s more, there&#39;s an improved version of that script in <a href="https://warlord0blog.wordpress.com/2022/12/05/git-hooks/">this blog post</a>, the improvement being that it skips any already encrypted files which match the <code>FILE_PATTERN</code> instead of breaking out of the <code>while</code> loop.</p>
 <p>Let&#39;s incorporate the relevant logic into our globally installed pre-commit hook:</p>
 <pre><code class="language-bash">#!/bin/sh
-# ...
+# ~/.githooks/pre-commit
 
 set -o nounset
 
@@ -125,7 +125,7 @@ git diff --cached --name-only | grep &quot;${FILE_PATTERN}&quot; | while IFS= re
   encrypt_if_needed_then_add &quot;${line}&quot;
 done
 </code></pre>
-<p>I've also put the vault password in a new file `~/.vault_password` so I don't have to enter it for every `ansible-vault` command. This works beautifully on commit, and won&#39;t try to encrypt files which are already encrypted:</p>
+<p>I've also put the vault password in a new file <code>~/.vault_password</code> so I don't have to enter it for every <code>ansible-vault</code> command. This works beautifully on commit, and won&#39;t try to encrypt files which are already encrypted:</p>
 <pre><code class="language-bash">$ ls -a
 .        ..        .bashrc    .env        .git        .gitignore
 
@@ -151,7 +151,7 @@ Encryption successful
 <h3 id="automatically-decrypt-files-after-commit">Automatically Decrypt Files After Commit</h3>
 <p>The pre-commit hook will work for making sure the secrets are encrypted, but I actually want to immediately decrypt those secrets once the commit is completed, so I can use them locally, modify them, etc. If I copy <code>pre-commit</code> to a file <code>post-commit</code> and make these changes, this should accomplish it:</p>
 <pre><code class="language-bash">#!/bin/sh
-# ...
+# ~/.githooks/post-commit
 
 set -o nounset
 
@@ -186,7 +186,7 @@ for file in $files; do
   decrypt_if_needed $file
 done
 </code></pre>
-<p>Now, when <code>.bashrc</code> is in its plaintext form, this is what happens on commit:</p>
+<p>Now, when <code>.bashrc</code> is unencrypted, this is what happens on commit:</p>
 <pre><code class="language-bash">$ git add --all &amp;&amp; git commit -m &quot;first&quot;
 Running pre-commit checks...
 Located a staged file that should be encrypted:
