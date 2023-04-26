@@ -221,7 +221,8 @@ export OPENAI_KEY=&quot;sk-hithisisntreallymykey0Kivelearnedmylesson&quot;
 <h3 id="what-about-post-checkout-and-post-pull">What About Post-Checkout and Post-Pull?</h3>
 <p>One flaw I can&#39;t live with is that if I check out a different branch or commit of this repo, the secrets-containing files will be encrypted. This will also happen when pulling from a remote repo.</p>
 <p>I&#39;m <em>pretty sure</em> the quick solution for this is:</p>
-<pre><code class="language-bash">$ cp ~/.githooks/post-commit ~/.githooks/post-checkout &amp;&amp; cp ~/.githooks/post-commit ~/.githooks/post-merge
+<pre><code class="language-bash">$ cp ~/.githooks/post-commit ~/.githooks/post-checkout
+$ cp ~/.githooks/post-commit ~/.githooks/post-merge
 </code></pre>
 <p>It works perfectly for checkout, but I haven&#39;t tested it for pull/merge yet.</p>
 <h3 id="the-end">The End</h3>
