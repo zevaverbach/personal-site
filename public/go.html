@@ -5,12 +5,17 @@
   <meta charset="utf-8">
   <title>A Taste of Go</title>
   <meta name="description" content="In which I familiarize myself with the syntax and niceties of Golang.">
+  <meta name="keywords" content="programming, golang, intro">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content "index, follow">
 
   <meta property="og:title" content="A Taste of Go">
   <meta property="og:url" content="https://zev.averba.ch/go">
+  <meta property="og:description" content="In which I familiarize myself with the syntax and niceties of Golang.">
   <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Zev Averbach">
+  <meta property="og:locale" content="en_US">
+
 
   <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
   <link href="/static/prism-dark.css" rel="stylesheet" />
@@ -84,14 +89,14 @@ func TestMyFunc(t *testing.T) {
 Prepend a function in a test module with <code>Example</code> which ends with <code>// Output:</code> and this will a) generate some documentation and b) be tested!
 Without that comment, it will generate the docs but won't run the test
 (what test?).</p>
-<h4>...with Benchmarking!</h4>
+<h3>...with Benchmarking!</h3>
 <p>This is another piece of the built-in test suite: Prepend a function in
 a test module with <code>Benchmark</code>, then add the <code>-bench=.</code> flag, and it'll
 run the function a bunch of times and tell you a) how many times it ran
 and b) how long each iteration took.</p>
 <p><code>godoc</code>! Your documentation will appear in a localhosted site alongside
 the stdlib and any packages you have installed.</p>
-<h4>...with a Coverage Tool!</h4>
+<h3>...with a Coverage Tool!</h3>
 <p><code>$ go test -cover # 👊</code></p>
 <h2>Only One Kind of Loop</h2>
 <p>Spoiler: it's <code>for</code>. 😄</p>
