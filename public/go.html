@@ -1,0 +1,194 @@
+<!doctype html>
+<html class="no-js" lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>A Taste of Go</title>
+  <meta name="description" content="In which I familiarize myself with the syntax and niceties of Golang.">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content "index, follow">
+
+  <meta property="og:title" content="A Taste of Go">
+  <meta property="og:url" content="https://zev.averba.ch/go">
+  <meta property="og:type" content="website">
+
+  <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+  <link href="/static/prism-dark.css" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/style.css">
+  <meta name="theme-color" content="#209cee">
+  <link rel="canonical" href="https://zev.averba.ch/go" />
+  
+</head>
+<body>
+    <nav>
+    <div id="logo">
+      <a href="https://zev.averba.ch" class="logo">
+        Zev Averbach:
+      </a>
+      
+      <h1 class="title">A Taste Of Go</h1>
+      
+    </div>
+  </nav>
+  <div id="body">
+<h2>Why?</h2>
+<p>Just for shits and giggles and procrastination, for the sole reason that
+<a href="https://quii.gitbook.io/learn-go-with-tests/go-fundamentals/hello-world">this
+tutorial</a>
+showed up in my Mastodon feed today. I'm also intrigued by the number of
+cool terminal apps I've been seeing made in Go, and maybe some other
+categories of things which I'm forgetting. Also, a) binaries and b)
+Kelsey Hightower. As it also turns out, the syntax is extremely simple.</p>
+<h2>First pleasant surprises: Succinctness</h2>
+<p>No semicolons! No parentheses for conditionals! These two make it feel a
+bit like home for this Pythonista.</p>
+<p>Private/public functions simply by having a lowercase/uppercase first
+letter, respectively!</p>
+<p>Named return values! After the closing parenthesis of a function's
+parameters, <code>(&lt;name&gt; &lt;type&gt;)</code> instantiates <code>&lt;name&gt;</code> with the value 0 (or
+&quot;&quot; for a string, etc.), and you can assign to this variable in the body
+of the function. When you do <code>return</code> with nothing after it, the named
+return value will be returned. This feels nice to me:</p>
+<pre><code class="language-go">func myFunc() (meaning int) {
+    meaning = 42
+    return
+}
+</code></pre>
+<p>For lack of a better term, &quot;bulk&quot; type declarations. So if <code>x</code> and <code>y</code>
+are both meant to be integers, you can specify them as</p>
+<pre><code class="language-go">func myFunc(x, y int)
+</code></pre>
+<p>I could see this being a tiny bit ambiguous, but it's another feature
+leading to succinctness.</p>
+<p>Docstrings are just <code>// comments above a function</code>. I guess they're
+called &quot;documentation&quot; rather than docstrings (Python-speak):</p>
+<pre><code class="language-go">// What I write here will automatically be scooped up into the documentation (which can be generated automatically with [godoc](https://pkg.go.dev/golang.org/x/tools/cmd/godoc).
+func myFunc() int {
+    return 0
+}
+</code></pre>
+<h2>Built-in Testing Framework</h2>
+<p>Simply name your test module with <code>_test.go</code> at the end, name your test
+functions with <code>Test</code> at their start, and finally add a boilerplate-y
+argument <code>t *testing.T</code> as the only argument to your tests. Oh, and
+<code>import &quot;testing&quot;</code>:</p>
+<pre><code class="language-go">// app_test.go
+
+import &quot;testing&quot;
+
+func TestMyFunc(t *testing.T) {
+    return nil
+}
+</code></pre>
+<p>Also similar to Python, you've got something akin to doctests built in:
+Prepend a function in a test module with <code>Example</code> which ends with <code>// Output:</code> and this will a) generate some documentation and b) be tested!
+Without that comment, it will generate the docs but won't run the test
+(what test?).</p>
+<h4>...with Benchmarking!</h4>
+<p>This is another piece of the built-in test suite: Prepend a function in
+a test module with <code>Benchmark</code>, then add the <code>-bench=.</code> flag, and it'll
+run the function a bunch of times and tell you a) how many times it ran
+and b) how long each iteration took.</p>
+<p><code>godoc</code>! Your documentation will appear in a localhosted site alongside
+the stdlib and any packages you have installed.</p>
+<h4>...with a Coverage Tool!</h4>
+<p><code>$ go test -cover # 👊</code></p>
+<h2>Only One Kind of Loop</h2>
+<p>Spoiler: it's <code>for</code>. 😄</p>
+<h2>Incredible neovim Support</h2>
+<p>I did the laziest Google research for setting up <code>neovim</code> for golang
+development, installed <a href="https://github.com/fatih/vim-go"><code>vim-go</code></a> (and
+did <code>:CocInstall coc-go</code>) and man, there is a lot of magic happening:</p>
+<p>Having initialized a go module, if I create a test module it
+automatically populates it with a bunch of boilerplate:</p>
+<pre><code class="language-go">package main
+
+import &quot;testing&quot;
+
+func TestHelloWorld(t *testing.T) {
+    // t.Fatal(&quot;not implemented&quot;)
+}
+</code></pre>
+<p>Also, auto imports, literally as you type (and removal of unused
+imports). Okay, it's actually on save.</p>
+<h2>Two Ways to Create a function</h2>
+<p>Similar to JavaScript, you've got both the expected function
+declaration:</p>
+<pre><code class="language-go">func FuncName(params) {
+}
+</code></pre>
+<p>as well as function assignment (sic?):</p>
+<pre><code class="language-go">FuncName := func(params)
+</code></pre>
+<h2>Arrays and Slices</h2>
+<p>Similar to C, Java, and other languages, you have to declare the length
+of an array in Go. However, when you define a function which accepts an
+array as a parameter, Go is a bit stricter than C: You actually have to
+specify the length of the array! However, slices are used far more than
+arrays in Go, which are declared like arrays but without giving a value
+for length:</p>
+<pre><code class="language-go">mySlice := []int{1, 2, 3}
+</code></pre>
+<p>This allows for more flexibility in function definitions.</p>
+<p>Sidenote: If you want the compiler to set the length of an array at
+declaration you must use <code>...</code>:</p>
+<pre><code class="language-go">myArray := [...]{1, 2, 3}
+</code></pre>
+<p>Like arrays, slices can't be resized, but there's a builtin for creating
+new slices from old ones while adding some values—</p>
+<pre><code class="language-go">append(slice []Type, elems ...Type) []Type
+</code></pre>
+<p>—as well as creating an empty slice of a certain length:</p>
+<pre><code class="language-go">make([]int, 10)
+</code></pre>
+<p>Then there's</p>
+<pre><code class="language-go">copy(dst, src []Type) int
+</code></pre>
+<p>Slicing slices and arrays is pretty much exactly like in Python.</p>
+<p>Two things which have to be considered when creating slices from large
+arrays is that if you don't use <code>copy</code>:</p>
+<p>1: Any changes made to the slice will also be made to the array (the
+slice is just a reference to a portion of the array).</p>
+<p>2: The memory used by the array will not be garbage-collected (of
+concern especially if it's a large array and the slice is small) so long
+as the slice is in scope/use.</p>
+<p>I also discovered that if you allocate, say, three slots in a slice,
+then try to copy all elements of an array of length &gt; 3 into it, there
+won't be an error: The first three elements of the array will be copied
+into the slice.</p>
+
+  <div id="about">
+  <img id='portrait' src="https://www.gravatar.com/avatar/fe783e04644862c30823614f31b9a996/?s=360" alt="smiley picture of shaven-head Zev">
+  <p>American programmer living in Switzerland. Constant learner, chess improver, speech-to-text. 🌼</p>
+  <div></div>
+  <div id="links">
+    <a href="https://www.dropbox.com/s/zbrwqgn688igce7/Zev_Averbach_Resume_2021.pdf?dl=0">
+      <svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd">
+          <style>
+        path {
+            fill: dodgerblue;
+        }
+        @media (prefers-color-scheme: dark) {
+            path { fill: #fdfa72; }
+        }
+          </style>
+          <path d="M3 24h19v-23h-1v22h-18v1zm17-24h-18v22h18v-22zm-1 1h-16v20h16v-20zm-2 16h-12v1h12v-1zm0-3h-12v1h12v-1zm0-3h-12v1h12v-1zm-7.348-3.863l.948.3c-.145.529-.387.922-.725 1.178-.338.257-.767.385-1.287.385-.643 0-1.171-.22-1.585-.659-.414-.439-.621-1.04-.621-1.802 0-.806.208-1.432.624-1.878.416-.446.963-.669 1.642-.669.592 0 1.073.175 1.443.525.221.207.386.505.496.892l-.968.231c-.057-.251-.177-.449-.358-.594-.182-.146-.403-.218-.663-.218-.359 0-.65.129-.874.386-.223.258-.335.675-.335 1.252 0 .613.11 1.049.331 1.308.22.26.506.39.858.39.26 0 .484-.082.671-.248.187-.165.322-.425.403-.779zm3.023 1.78l-1.731-4.842h1.06l1.226 3.584 1.186-3.584h1.037l-1.734 4.842h-1.044z"/>
+      </svg>
+  </a>
+        
+  <a rel="me" href="https://recurse.social/@zev">
+    <svg height="24" width="24" xmlns="http://www.w3.org/2000/svg" viewBox="-0.41 0.22 747.62 801.4499999999999">
+	    <path d="M729.94 479.5c-10.96 56.4-98.17 118.12-198.34 130.08-52.23 6.23-103.66 11.96-158.49 9.44-89.68-4.1-160.45-21.4-160.45-21.4 0 8.73.54 17.04 1.62 24.81 11.66 88.52 87.76 93.82 159.84 96.29 72.76 2.49 137.55-17.94 137.55-17.94l2.99 65.79s-50.89 27.32-141.55 32.35c-50 2.75-112.07-1.26-184.37-20.39C31.94 737.02 4.97 569.86.85 400.26-.41 349.9.37 302.42.37 262.7.37 89.27 113.99 38.44 113.99 38.44 171.28 12.12 269.59 1.06 371.79.22h2.52c102.19.84 200.57 11.9 257.86 38.22 0 0 113.62 50.83 113.62 224.26 0 0 1.42 127.96-15.85 216.8"></path><path d="M611.77 276.16v209.99h-83.2V282.33c0-42.97-18.07-64.77-54.23-64.77-39.98 0-60.01 25.86-60.01 77.02v111.57h-82.71V294.58c0-51.16-20.04-77.02-60.01-77.02-36.16 0-54.24 21.8-54.24 64.77v203.82h-83.19V276.16c0-42.92 10.93-77.03 32.88-102.26 22.63-25.23 52.27-38.17 89.07-38.17 42.57 0 74.81 16.37 96.12 49.1l20.72 34.74 20.73-34.74c21.31-32.73 53.55-49.1 96.12-49.1 36.79 0 66.44 12.94 89.07 38.17 21.95 25.23 32.88 59.34 32.88 102.26z"></path>
+</svg>
+</a>
+    <a href="https://github.com/zevaverbach">
+    <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" >
+    <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>
+</svg>
+  </div>
+</div>
+  </body>
+  <script src="https://cdn.usefathom.com/script.js" data-site="LWJFWQJS" defer></script>
+  <script src="/static/prism-dark.js"></script>
+</body>
+</html>
