@@ -439,6 +439,26 @@ $ cp ~/.githooks/post-commit ~/.githooks/post-merge
           img.title = img.alt;
         }
       };
+
+      const prefersDarkScheme = window.matchMedia(
+        "(prefers-color-scheme: dark)"
+      );
+
+      // Set a class on the html element
+      if (prefersDarkScheme.matches) {
+        document.documentElement.setAttribute("data-theme", "dark");
+      } else {
+        document.documentElement.setAttribute("data-theme", "light");
+      }
+
+      // Listener to switch themes when system settings are changed
+      prefersDarkScheme.addListener((e) => {
+        if (e.matches) {
+          document.documentElement.setAttribute("data-theme", "dark");
+        } else {
+          document.documentElement.setAttribute("data-theme", "light");
+        }
+      });
     </script>
   </body>
 </html>
