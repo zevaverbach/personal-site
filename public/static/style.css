@@ -168,7 +168,7 @@ img {
 
 #about {
   max-width: calc(var(--my-max-width) / 1.4);
-  padding-top: 4em;
+  padding-top: 3em;
   margin: 0 auto !important;
   clear: both;
   display: grid;
