@@ -38,7 +38,7 @@
       </p>
       <p>
         As I'd experienced in past attempts, it was immediately difficult, and
-        after the first five minutes to slogging through the docs I created my
+        after the first five minutes of slogging through the docs I created my
         first support ticket. While signing up for a new AWS account today I did
         a little research about the support tiers and read some glowing reviews
         about it. I actually signed up for the &quot;business&quot; tier because
@@ -50,9 +50,10 @@
         I'd immediately gotten stuck in deploying
         <a href="https://github.com/kindchess">my chess server</a> to Elastic
         Beanstalk because of permissions errors, despite adding what I thought
-        were a number of wide open AWS-managed policies. Part of my problem was
-        that the error given in the console was utterly generic:
-        &quot;permission error&quot; or something along those lines.
+        were a number of wide open (back to my old habits! 😊) AWS-managed
+        policies. Part of my problem was that the error given in the console was
+        utterly generic: &quot;permission error&quot; or something along those
+        lines.
       </p>
       <p>
         ChatGPT nudged me towards
@@ -73,7 +74,9 @@
         I only knew enough to search for permission groups with words resembling
         these, and the only result from such a search (<code>codecommit</code>)
         in
-        https://us-east-1.console.aws.amazon.com/iamv2/home#/groups/details/&lt;YOUR-GROUP_NAME&gt;/attach-policies
+        <code
+          >https://us-east-1.console.aws.amazon.com/iamv2/home#/groups/details/&lt;MY-GROUP-NAME&gt;/attach-policies</code
+        >
         yielded
       </p>
       <pre><code class="language-bash">AWSCodeCommitFullAccess
@@ -81,23 +84,26 @@ AWSCodeCommitPowerUser
 AWSCodeCommitReadOnly
 </code></pre>
       <p>
-        , none of which quite fit the bill, as I realized after clicking into
-        their CloudFormation JSON; they were either/both too wide open and/or
-        missing one or two needed permissions. Despite this, I did add the
+        none of which quite fit the bill, as I realized after clicking into
+        their CloudFormation JSON: They were variously too wide open or missing
+        one or two needed permissions. Despite this, I did add the
         <code>AWSCodeCommitFullAccess</code> permission to my role, but
         surprisingly this didn't make the CLI error disappear.
       </p>
       <h2>The Support Call</h2>
       <p>
-        I was pleased to receive a call from Varun within 10 minutes or so after
-        creating the ticket. The connection was great, and once we upgraded to a
-        screenshare via Amazon Chime it was significantly better.
+        I was pleased to receive a call from a gentleman called Varun within 10
+        minutes after creating the ticket. The connection was great, and once we
+        upgraded to a screenshare via Amazon Chime it was significantly better.
       </p>
       <p>
         Varun asked me to replicate the error I was having while sharing my
         screen. I couldn't! It turned out that I'd needed to wait a few extra
         seconds after granting the new permission before it took effect -- and
-        maybe even longer when using the CLI, according to his experience.
+        maybe even longer when using the CLI, according to his experience -- and
+        so technically I'd already resolved my own problem. Nonetheless,
+        remember my preamble where I was saying I want to do things
+        <em>properly</em>?
       </p>
       <p>
         We took a step back and I replicated the initial error by revoking
@@ -109,15 +115,19 @@ AWSCodeCommitReadOnly
         the UI/UX is not amazing on AWS; I appreciate minimalism, but IMO there
         are some missing visual indicators, for example, to differentiate
         between a search bar on <em>existing</em> permissions and one on
-        <em>available</em> ones. In any case, I added the missing permissions to
-        a single custom one <code>beanstalk_least_privileged</code> and attached
-        it to my user.
+        <em>available</em> ones.
+      </p>
+      <p>
+        In any case, I added the missing permissions to a single custom one
+        <code>beanstalk_least_privileged</code> and attached it to my user.
       </p>
       <p>
         This <em>nearly</em> resolved the issue, as when I ran
         <code>eb init</code> again, it walked me through its little
-        questionnaire (region: eu-central-1, environment: Python, Python
-        version: 3.11, etc.), at the end of which it said
+        questionnaire (<code
+          >region: eu-central-1, environment: Python, Python version: 3.11,
+          etc.</code
+        >), at the end of which it said
       </p>
       <pre><code class="language-bash">Successfully created branch: trunk
 Do you want to set up SSH for your instances?
@@ -130,10 +140,11 @@ Do you want to set up SSH for your instances?
       <pre><code class="language-bash">ERROR: NotAuthorizedError - Operation Denied. You are not authorized to perform this operation. Encoded authorization failure message: OSJ7CGDUS_zBtGKsVLT7vJw2d5JCgx1_6kWPTzDC25p1FiGU4Wcca7zUUMM9A6P1io2XcXT__JUHJr4PPuXw57k6-oAW05UOK6EXrL-KrmwOnJZ7C4u_kEIpqN7oiuHHoIcZbByL6m9V1rJ9Zr-K_QATyjHEduGEgKQALe2j3CHaSr3BEaMZAo_Ay5nsaedtt_0L9peItck1aDXG2zLqLWQAw2Eb7etscudj2UjDtU94HiZIVtpfUW-DL7o5dPlxfhPRFRXKiOGbM8DkHxR6WIWTIrrIKxlTo7ccFKM99Yx-cRKsEF03qtWS0CBE_1yhVEjlu7ymXsVZdjeOCyORA-ZTSUMKrzdbfyMezGFOgJ0yZc4nAjBJRutTBRrFn4eiJ2DzoiAAvTCA9x8GV6PCmcCfV_xfBrphBP9uqgzfwl_lic5fTI1fV18grHZIAjIA3xglIEZioMG8K7oiuPRqffqCa2p3Loaxfvj52lLppFBaFntGe1el2BYEbRvzpuQJVuP4xia3ncpwKcKAzZeKTXBjR0gEdbY
 </code></pre>
       <p>
-        If I were on to try and resolve that &quot;encoded authorization failure
-        message&quot; with the two required steps, I'd optimistically estimate
-        that it would take me 30-60 minutes; Arun set me on the right track in
-        only a couple with this command to decode the failure message:
+        If I were to try and resolve that &quot;encoded authorization failure
+        message&quot; with the ensuing additional steps, I'd optimistically
+        estimate that it would take me 30-60 minutes; Arun set me on the right
+        track in only a couple minutes with this command to decode the failure
+        message:
       </p>
       <pre><code class="language-bash">$ aws sts decode-authorization-message --encoded-message OSJ7CGDUS_zBtGKsVLT7vJw2d5JCgx1_6kWPTzDC25p1FiGU4Wcca7zUUMM9A6P1io2XcXT__JUHJr4PPuXw
 57k6-oAW05UOK6EXrL-KrmwOnJZ7C4u_kEIpqN7oiuHHoIcZbByL6m9V1rJ9Zr-K_QATyjHEduGEgKQALe2j3CHaSr3BEaMZAo_Ay5nsaedtt_0L9peItck1aDXG2zLqLWQAw2Eb7etsc
@@ -144,7 +155,8 @@ zpuQJVuP4xia3ncpwKcKAzZeKTXBjR0gEdbY
 An error occurred (AccessDenied) when calling the DecodeAuthorizationMessage operation: User: arn:aws:iam::904645255421:user/kindchess-admin is not authorized to perform: sts:DecodeAuthorizationMessage because no identity-based policy allows the sts:DecodeAuthorizationMessage action
 </code></pre>
       <p>
-        Having added this permission to my user and re-running the
+        Having added the <code>DecodeAuthorizationMessage</code> permission to
+        my user and re-running the
         <code>aws sts decode-authorization-message ...</code> command, I got a
         new error:
       </p>
@@ -170,9 +182,9 @@ An error occurred (AccessDenied) when calling the DecodeAuthorizationMessage ope
       'values': {'items': [{'value': 'aws-eb'}]}}]}}}}
 </code></pre>
       <p>
-        A new error is almost always an encouraging sign, right? By the way, the
-        error was displayed in ugly, backslash-filled, unformatted JSON, not the
-        indented beauty seen above. 😢
+        A new error is almost always an encouraging sign, right? (incidentally,
+        the error was displayed in ugly, backslash-filled, unformatted JSON, not
+        the indented beauty seen above. 😢)
       </p>
       <p>
         The key piece of info in this data dump is that the
@@ -201,26 +213,23 @@ An error occurred (AccessDenied) when calling the DecodeAuthorizationMessage ope
         the art. A Google search yielded a handful of interesting-looking tools
         which seem like they could save a lot of time and trouble:
       </p>
-      <ul>
-        <li>
-          <a href="https://github.com/salesforce/policy_sentry"
-            >Policy Sentry</a
-          >
-          from Salesforce
-        </li>
-        <li>
-          <a href="https://github.com/Netflix-Skunkworks/aardvark">Aardvark</a>
-          from Netflix
-        </li>
-        <li>
-          <a href="https://github.com/Netflix/Repokid">repokid</a> also from
-          Netflix
-        </li>
-      </ul>
+      <p>
+        <a href="https://github.com/salesforce/policy_sentry">Policy Sentry</a>
+        from Salesforce
+        <a href="https://github.com/Netflix-Skunkworks/aardvark">Aardvark</a>
+        from Netflix
+        <a href="https://github.com/Netflix/Repokid">repokid</a> also from
+        Netflix
+      </p>
       <p>
         These are in descending order of their most recent commit, Policy Sentry
         being the only one which has a 2023 commit so far. I'll reach for one of
         these if (when) this process becomes too onerous.
+      </p>
+      <h2>Trudging On</h2>
+      <p>
+        Wish me luck on the deployment! With any luck I'll have kindchess.com
+        migrated to AWS today.
       </p>
 
       <div id="about">
