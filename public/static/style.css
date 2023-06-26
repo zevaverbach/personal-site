@@ -136,11 +136,18 @@ img {
 .footnotes {
   border-top: 1px solid var(--my-gray);
   padding-top: 1em;
+  counter-reset: footnote;
 }
 
 .footnotes p {
   font-size: calc(.8em + .1vw);
 }
+
+.footnotes li::before {
+  counter-increment: footnote;
+  content: "[" counter(footnote) "] ";
+}
+
 
 
 #body, nav, #toc {
