@@ -70,11 +70,11 @@ p a:hover {
   fill: var(--my-background-color);
 }
 
-.about-icon {
+.about-icon-fill {
   fill: var(--my-svg-color);
 }
 
-.about-icon:hover {
+.about-icon:hover .about-icon-fill {
   fill: var(--my-paragraph-link-color-hover);
 }
 
