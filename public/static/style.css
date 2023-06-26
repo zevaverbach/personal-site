@@ -66,6 +66,13 @@ p a:hover {
   color: var(--my-paragraph-link-color-hover) !important;
 }
 
+.mastodon-icon-m {
+  fill: var(--my-background-color);
+}
+
+.about-icon {
+  fill: var(--my-svg-color);
+}
 
 code {
   font-family: "Dank Mono", Helvetica, sans-serif;
