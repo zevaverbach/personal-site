@@ -129,6 +129,10 @@ nav div a:first-of-type {
   text-decoration: none;
 }
 
+img {
+  max-width: var(--my-max-width);
+}
+
 #body, nav, #toc {
   max-width: var(--my-max-width);
   margin: 0 auto !important;
