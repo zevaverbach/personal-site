@@ -74,6 +74,10 @@ p a:hover {
   fill: var(--my-svg-color);
 }
 
+.about-icon:hover {
+  fill: var(--my-paragraph-link-color-hover);
+}
+
 code {
   font-family: "Dank Mono", Helvetica, sans-serif;
   font-size: calc(1.3em + .3vw);
