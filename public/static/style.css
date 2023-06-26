@@ -145,7 +145,7 @@ img {
 
 .footnotes li::before {
   counter-increment: footnote;
-  content: "[" counter(footnote) "] ";
+  content: counter(footnote) ". ";
 }
 
 
