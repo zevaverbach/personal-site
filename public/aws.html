@@ -133,7 +133,8 @@ AWSCodeCommitReadOnly
       </p>
       <p>
         In any case, I added the missing permissions to a single custom one
-        <code>beanstalk_least_privileged</code> and attached it to my user.
+        named <code>beanstalk_least_privileged</code> and attached it to my
+        user.
       </p>
       <p>
         This <em>nearly</em> resolved the issue, as when I ran
@@ -149,22 +150,20 @@ Do you want to set up SSH for your instances?
 </code></pre>
       <p>
         to which I gleefully tapped <code>Y</code>. However, once I got all the
-        way through RSA key pair prompts, it blurted out the enigmatic
+        way through the RSA key pair prompts, it blurted out the enigmatic
       </p>
-      <pre><code class="language-bash">ERROR: NotAuthorizedError - Operation Denied. You are not authorized to perform this operation. Encoded authorization failure message: OSJ7CGDUS_zBtGKsVLT7vJw2d5JCgx1_6kWPTzDC25p1FiGU4Wcca7zUUMM9A6P1io2XcXT__JUHJr4PPuXw57k6-oAW05UOK6EXrL-KrmwOnJZ7C4u_kEIpqN7oiuHHoIcZbByL6m9V1rJ9Zr-K_QATyjHEduGEgKQALe2j3CHaSr3BEaMZAo_Ay5nsaedtt_0L9peItck1aDXG2zLqLWQAw2Eb7etscudj2UjDtU94HiZIVtpfUW-DL7o5dPlxfhPRFRXKiOGbM8DkHxR6WIWTIrrIKxlTo7ccFKM99Yx-cRKsEF03qtWS0CBE_1yhVEjlu7ymXsVZdjeOCyORA-ZTSUMKrzdbfyMezGFOgJ0yZc4nAjBJRutTBRrFn4eiJ2DzoiAAvTCA9x8GV6PCmcCfV_xfBrphBP9uqgzfwl_lic5fTI1fV18grHZIAjIA3xglIEZioMG8K7oiuPRqffqCa2p3Loaxfvj52lLppFBaFntGe1el2BYEbRvzpuQJVuP4xia3ncpwKcKAzZeKTXBjR0gEdbY
+      <pre><code class="language-bash">ERROR: NotAuthorizedError - Operation Denied. You are not authorized to perform this operation. Encoded authorization failure message: &lt;a bunch of gobbledygook&gt;
 </code></pre>
       <p>
         If I were to try and resolve that &quot;encoded authorization failure
         message&quot; with the ensuing additional steps, I'd optimistically
-        estimate that it would take me 30-60 minutes; Arun set me on the right
-        track in only a couple minutes with this command to decode the failure
-        message:
+        estimate that it would take me 30-60 minutes.
       </p>
-      <pre><code class="language-bash">$ aws sts decode-authorization-message --encoded-message OSJ7CGDUS_zBtGKsVLT7vJw2d5JCgx1_6kWPTzDC25p1FiGU4Wcca7zUUMM9A6P1io2XcXT__JUHJr4PPuXw
-57k6-oAW05UOK6EXrL-KrmwOnJZ7C4u_kEIpqN7oiuHHoIcZbByL6m9V1rJ9Zr-K_QATyjHEduGEgKQALe2j3CHaSr3BEaMZAo_Ay5nsaedtt_0L9peItck1aDXG2zLqLWQAw2Eb7etsc
-udj2UjDtU94HiZIVtpfUW-DL7o5dPlxfhPRFRXKiOGbM8DkHxR6WIWTIrrIKxlTo7ccFKM99Yx-cRKsEF03qtWS0CBE_1yhVEjlu7ymXsVZdjeOCyORA-ZTSUMKrzdbfyMezGFOgJ0yZc
-4nAjBJRutTBRrFn4eiJ2DzoiAAvTCA9x8GV6PCmcCfV_xfBrphBP9uqgzfwl_lic5fTI1fV18grHZIAjIA3xglIEZioMG8K7oiuPRqffqCa2p3Loaxfvj52lLppFBaFntGe1el2BYEbRv
-zpuQJVuP4xia3ncpwKcKAzZeKTXBjR0gEdbY
+      <p>
+        Instead, Arun set me on the right track in only a couple minutes with
+        this command to decode the failure message:
+      </p>
+      <pre><code class="language-bash">$ aws sts decode-authorization-message --encoded-message &lt;gobbledygook&gt; 
 
 An error occurred (AccessDenied) when calling the DecodeAuthorizationMessage operation: User: arn:aws:iam::904645255421:user/kindchess-admin is not authorized to perform: sts:DecodeAuthorizationMessage because no identity-based policy allows the sts:DecodeAuthorizationMessage action
 </code></pre>
@@ -196,9 +195,11 @@ An error occurred (AccessDenied) when calling the DecodeAuthorizationMessage ope
       'values': {'items': [{'value': 'aws-eb'}]}}]}}}}
 </code></pre>
       <p>
-        A new error is almost always an encouraging sign, right? (incidentally,
-        the error was displayed in ugly, backslash-filled, unformatted JSON, not
-        the indented beauty seen above. 😢)
+        A new error is almost always an encouraging sign, right<sup
+          class="footnote-ref"
+          id="fnref-1"
+          ><a href="#fn-1">1</a></sup
+        >?
       </p>
       <p>
         The key piece of info in this data dump is that the
@@ -249,6 +250,21 @@ An error occurred (AccessDenied) when calling the DecodeAuthorizationMessage ope
         Wish me luck on the deployment! With any luck I'll have
         <a href="kindchess.com">KindChess</a> migrated to AWS today.
       </p>
+      <section class="footnotes">
+        <ol>
+          <li id="fn-1">
+            <p>
+              Incidentally, the error was displayed in ugly, backslash-filled,
+              unformatted JSON, not the indented beauty seen above. Come on AWS!
+              A little formatting never hurt anyone. 😢<a
+                href="#fnref-1"
+                class="footnote"
+                >&#8617;</a
+              >
+            </p>
+          </li>
+        </ol>
+      </section>
 
       <div id="about">
         <img
