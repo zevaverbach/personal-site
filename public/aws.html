@@ -320,5 +320,15 @@ An error occurred (AccessDenied) when calling the DecodeAuthorizationMessage ope
       defer
     ></script>
     <script src="/static/prism-dark.js"></script>
+    <script>
+      window.onload = function () {
+        let imgs = document.getElementsByTagName("img");
+
+        for (let i = 0; i < imgs.length; i++) {
+          let img = imgs[i];
+          img.title = img.alt;
+        }
+      };
+    </script>
   </body>
 </html>
