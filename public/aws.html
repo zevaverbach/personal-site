@@ -37,13 +37,14 @@
         permission or two.
       </p>
       <p>
-        As I'd experienced in past attempts, it was immediately difficult, and
-        after the first five minutes of slogging through the docs I created my
-        first support ticket. While signing up for a new AWS account today I did
-        a little research about the support tiers and read some glowing reviews
-        about it. I actually signed up for the &quot;business&quot; tier because
-        it gives you phone and chat options as well as a one-hour guaranteed
-        turnaround.
+        As I'd experienced in past attempts to wrangle with IAM, it was
+        immediately difficult, and after the first five minutes of slogging
+        through the docs I created my first support ticket. While signing up for
+        a new AWS account today I did a little research about the support tiers
+        and read some glowing reviews about it. I actually signed up for the
+        &quot;business&quot; tier because it gives you phone and chat options as
+        well as a one-hour guaranteed turnaround. (no, this isn't a sponsored
+        post! 😝)
       </p>
       <h2>My First Ticket</h2>
       <p>
@@ -72,7 +73,7 @@
 </code></pre>
       <p>
         I only knew enough to search for permission groups with words resembling
-        these, and the only result from such a search (<code>codecommit</code>)
+        these, and the only result from such a search (&quot;codecommit&quot;)
         in
         <code
           >https://us-east-1.console.aws.amazon.com/iamv2/home#/groups/details/&lt;MY-GROUP-NAME&gt;/attach-policies</code
@@ -92,18 +93,21 @@ AWSCodeCommitReadOnly
       </p>
       <h2>The Support Call</h2>
       <p>
-        I was pleased to receive a call from a gentleman called Varun within 10
+        I was pleased to receive a call from a nice person named Varun within 10
         minutes after creating the ticket. The connection was great, and once we
         upgraded to a screenshare via Amazon Chime it was significantly better.
       </p>
       <p>
         Varun asked me to replicate the error I was having while sharing my
-        screen. I couldn't! It turned out that I'd needed to wait a few extra
-        seconds after granting the new permission before it took effect -- and
-        maybe even longer when using the CLI, according to his experience -- and
-        so technically I'd already resolved my own problem. Nonetheless,
-        remember my preamble where I was saying I want to do things
-        <em>properly</em>?
+        screen.
+      </p>
+      <p>I couldn't! 😳</p>
+      <p>
+        It turned out that I'd needed to wait a few extra seconds after granting
+        the new permission before it took effect -- and maybe even longer when
+        using the CLI, according to his experience -- and so technically I'd
+        already resolved my own problem. Nonetheless, remember my preamble about
+        wanting to do things <em>properly</em>?
       </p>
       <p>
         We took a step back and I replicated the initial error by revoking
@@ -115,7 +119,17 @@ AWSCodeCommitReadOnly
         the UI/UX is not amazing on AWS; I appreciate minimalism, but IMO there
         are some missing visual indicators, for example, to differentiate
         between a search bar on <em>existing</em> permissions and one on
-        <em>available</em> ones.
+        <em>available</em> ones (can you tell the difference??):
+      </p>
+      <p>
+        <img
+          src="existing.png"
+          alt="the console on AWS that shows existing IAM permissions for a given group"
+        />
+        <img
+          src="new.png"
+          alt="the console on AWS that shows IAM permissions which are available to add to a given group"
+        />
       </p>
       <p>
         In any case, I added the missing permissions to a single custom one
