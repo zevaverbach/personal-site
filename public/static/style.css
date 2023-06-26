@@ -133,6 +133,16 @@ img {
   max-width: var(--my-max-width);
 }
 
+.footnotes {
+  border-top: 1px solid var(--my-gray);
+  padding-top: 1em;
+}
+
+.footnotes p {
+  font-size: calc(.8em + .1vw);
+}
+
+
 #body, nav, #toc {
   max-width: var(--my-max-width);
   margin: 0 auto !important;
