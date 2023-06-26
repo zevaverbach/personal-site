@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Iterative IAM-ing</title>
+    <meta name="description" content="How to initially approach IAM." />
+    <meta name="keywords" content="programming, devops, architecture, AWS" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content "index, follow">
+
+    <meta property="og:title" content="Iterative IAM-ing" />
+    <meta property="og:url" content="https://zev.averba.ch/iam" />
+    <meta property="og:description" content="How to initially approach IAM." />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Zev Averbach" />
+    <meta property="og:locale" content="en_US" />
+
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico" />
+    <link href="/static/prism-dark.css" rel="stylesheet" />
+    <link rel="stylesheet" href="/static/style.css" />
+    <meta name="theme-color" content="#209cee" />
+    <link rel="canonical" href="https://zev.averba.ch/iam" />
+  </head>
+  <body>
+    <nav>
+      <div id="logo">
+        <a href="https://zev.averba.ch" class="logo"> Zev Averbach: </a>
+
+        <h1 class="title">Iterative IAM-ing</h1>
+      </div>
+    </nav>
+    <div id="body">
+      <p>
+        I've embarked this morning on my first serious AWS voyage. I've used a
+        bunch of AWS services in the past, but unfortunately I never took the
+        IAM piece seriously and skipped over it with a broad AWS-managed
+        permission or two.
+      </p>
+      <p>
+        As I'd experienced in past attempts to wrangle with IAM, it was
+        immediately difficult, and after the first five minutes of slogging
+        through the docs I created my first support ticket. While signing up for
+        a new AWS account today I did a little research about the support tiers
+        and read some glowing reviews about it. I actually signed up for the
+        &quot;business&quot; tier because it gives you phone and chat options as
+        well as a one-hour guaranteed turnaround. (no, this isn't a sponsored
+        post! 😝)
+      </p>
+      <h2>My First Ticket</h2>
+      <p>
+        I'd immediately gotten stuck in deploying
+        <a href="https://github.com/kindchess">my chess server</a> to Elastic
+        Beanstalk because of permissions errors, despite adding what I thought
+        were a number of wide open (back to my old habits! 😊) AWS-managed
+        policies. Part of my problem was that the error given in the console was
+        utterly generic: &quot;permission error&quot; or something along those
+        lines.
+      </p>
+      <p>
+        ChatGPT nudged me towards
+        <a
+          href="https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/eb-cli3.html"
+          >the Elastic Beanstalk CLI</a
+        >, and when I used it to <code>eb init</code> Beanstalk in my local repo
+        it gave a more fine-grained error:
+      </p>
+      <pre><code class="language-bash">EB CLI does not have the right permissions to access CodeCommit. List of IAM policies needed by EB CLI, please configure and try again.
+ codecommit:CreateRepository
+ codecommit:CreateBranch
+ codecommit:GetRepository
+ codecommit:ListRepositories
+ codecommit:ListBranches
+</code></pre>
+      <p>
+        I only knew enough to search for permission groups with words resembling
+        these, and the only result from such a search (&quot;codecommit&quot;)
+        in
+        <code
+          >https://us-east-1.console.aws.amazon.com/iamv2/home#/groups/details/&lt;MY-GROUP-NAME&gt;/attach-policies</code
+        >
+        yielded
+      </p>
+      <pre><code class="language-bash">AWSCodeCommitFullAccess
+AWSCodeCommitPowerUser
+AWSCodeCommitReadOnly
+</code></pre>
+      <p>
+        none of which quite fit the bill, as I realized after clicking into
+        their CloudFormation JSON: They were variously too wide open or missing
+        one or two needed permissions. Despite this, I did add the
+        <code>AWSCodeCommitFullAccess</code> permission to my role, but
+        surprisingly this didn't make the CLI error disappear.
+      </p>
+      <h2>The Support Call</h2>
+      <p>
+        I was pleased to receive a call from a nice person named Varun within 10
+        minutes after creating the ticket. The connection was great, and once we
+        upgraded to a screenshare via Amazon Chime it was significantly better.
+      </p>
+      <p>
+        Varun asked me to replicate the error I was having while sharing my
+        screen.
+      </p>
+      <p>I couldn't! 😳</p>
+      <p>
+        It turned out that I'd needed to wait a few extra seconds after granting
+        the new permission before it took effect -- and maybe even longer when
+        using the CLI, according to his experience -- and so technically I'd
+        already resolved my own problem. Nonetheless, remember my preamble about
+        wanting to do things <em>properly</em>?
+      </p>
+      <p>
+        We took a step back and I replicated the initial error by revoking
+        <code>AWSCodeCommitFullAccess</code>. He then walked me through creating
+        a custom permission
+        <a href="https://us-east-1.console.aws.amazon.com/iamv2/home#/policies"
+          >here</a
+        >, which was relatively straightforward. To repeat a common complaint,
+        the UI/UX is not amazing on AWS; I appreciate minimalism, but IMO there
+        are some missing visual indicators, for example, to differentiate
+        between a search bar on <em>existing</em> permissions and one on
+        <em>available</em> ones (can you tell the difference??):
+      </p>
+      <p>
+        <img
+          src="static/existing.png"
+          alt="the console on AWS that shows existing IAM permissions for a given group"
+        />
+        <img
+          src="static/new.png"
+          alt="the console on AWS that shows IAM permissions which are available to add to a given group"
+        />
+      </p>
+      <p>
+        In any case, I added the missing permissions to a single custom one
+        named <code>beanstalk_least_privileged</code> and attached it to my
+        user.
+      </p>
+      <p>
+        This <em>nearly</em> resolved the issue, as when I ran
+        <code>eb init</code> again, it walked me through its little
+        questionnaire (<code
+          >region: eu-central-1, environment: Python, Python version: 3.11,
+          etc.</code
+        >), at the end of which it said
+      </p>
+      <pre><code class="language-bash">Successfully created branch: trunk
+Do you want to set up SSH for your instances?
+(Y/n): 
+</code></pre>
+      <p>
+        to which I gleefully tapped <code>Y</code>. However, once I got all the
+        way through the RSA key pair prompts, it blurted out the enigmatic
+      </p>
+      <pre><code class="language-bash">ERROR: NotAuthorizedError - Operation Denied. You are not authorized to perform this operation. Encoded authorization failure message: &lt;a bunch of gobbledygook&gt;
+</code></pre>
+      <p>
+        If I were to try and resolve that &quot;encoded authorization failure
+        message&quot; with the ensuing additional steps, I'd optimistically
+        estimate that it would take me 30-60 minutes.
+      </p>
+      <p>
+        Instead, Arun set me on the right track in only a couple minutes with
+        this command to decode the failure message:
+      </p>
+      <pre><code class="language-bash">$ aws sts decode-authorization-message --encoded-message &lt;gobbledygook&gt; 
+
+An error occurred (AccessDenied) when calling the DecodeAuthorizationMessage operation: User: arn:aws:iam::904645255421:user/kindchess-admin is not authorized to perform: sts:DecodeAuthorizationMessage because no identity-based policy allows the sts:DecodeAuthorizationMessage action
+</code></pre>
+      <p>
+        Having added the <code>DecodeAuthorizationMessage</code> permission to
+        my user and re-running the
+        <code>aws sts decode-authorization-message ...</code> command, I got a
+        new error:
+      </p>
+      <pre><code class="language-bash">{'DecodedMessage': {'allowed': False,
+  'explicitDeny': False,
+  'matchedStatements': {'items': []},
+  'failures': {'items': []},
+  'context': {'principal': {'id': 'AIDA5FIIPED6WJ6CS3GOS',
+    'name': 'kindchess-admin',
+    'arn': 'arn:aws:iam::904645255421:user/kindchess-admin'},
+   'action': 'ec2:ImportKeyPair',
+   'resource': 'arn:aws:ec2:eu-central-1:904645255421:key-pair/aws-eb',
+   'conditions': {'items': [{'key': 'aws:Region',
+      'values': {'items': [{'value': 'eu-central-1'}]}},
+     {'key': 'aws:Service', 'values': {'items': [{'value': 'ec2'}]}},
+     {'key': 'aws:Resource',
+      'values': {'items': [{'value': 'key-pair/aws-eb'}]}},
+     {'key': 'aws:Type', 'values': {'items': [{'value': 'key-pair'}]}},
+     {'key': 'aws:Account', 'values': {'items': [{'value': '904645255421'}]}},
+     {'key': 'aws:ARN',
+      'values': {'items': [{'value': 'arn:aws:ec2:eu-central-1:904645255421:key-pair/aws-eb'}]}},
+     {'key': 'ec2:KeyPairName',
+      'values': {'items': [{'value': 'aws-eb'}]}}]}}}}
+</code></pre>
+      <p>
+        A new error is almost always an encouraging sign, right<sup
+          class="footnote-ref"
+          id="fnref-1"
+          ><a href="#fn-1">1</a></sup
+        >?
+      </p>
+      <p>
+        The key piece of info in this data dump is that the
+        <code>ec2:ImportKeyPair</code> permission is missing. Having added that,
+        everything ran as expected! Whew.
+      </p>
+      <h3>Extra Wisdom From an AMA With Arun</h3>
+      <p>
+        Without any cajoling on my part, Arun stayed on the line with me while I
+        threw a bunch of newbie IAM-related questions at him. That's when I got
+        the &quot;wait a few seconds, or even longer, to allow IAM changes to
+        take effect&quot; nugget.
+      </p>
+      <p>
+        I also asked him what sort of tools and abstractions small (1-10 people)
+        groups are using, or should use: He said the console or the CLI should
+        be sufficient. I told him about the &quot;try to spin up cloud asset,
+        get error, add new permission&quot; cycle that I saw echoed
+        <a href="https://news.ycombinator.com/item?id=24091875"
+          >on Hacker News</a
+        >, and he said this is more or less what he recommends.
+      </p>
+      <h2>Tools For Expedient IAM Generation</h2>
+      <p>
+        It's hard for me to accept this slow, iterative process as the state of
+        the art. A Google search yielded a handful of interesting-looking tools
+        which seem like they could save a lot of time and trouble:
+      </p>
+      <p>
+        <a href="https://github.com/salesforce/policy_sentry">Policy Sentry</a>
+        from Salesforce
+      </p>
+      <p>
+        <a href="https://github.com/Netflix-Skunkworks/aardvark">Aardvark</a>
+        from Netflix
+      </p>
+      <p>
+        <a href="https://github.com/Netflix/Repokid">repokid</a> also from
+        Netflix
+      </p>
+      <p>
+        These are in descending order of their most recent commit, Policy Sentry
+        being the only one which has a 2023 commit so far. I'll reach for one of
+        these if (when) this process becomes too onerous.
+      </p>
+      <h2>Trudging On</h2>
+      <p>
+        Wish me luck on the deployment! With any luck I'll have
+        <a href="https://kindchess.com">KindChess</a> migrated to AWS today.
+      </p>
+      <section class="footnotes">
+        <ol>
+          <li id="fn-1">
+            <p>
+              Incidentally, the error was displayed in ugly, backslash-filled,
+              unformatted JSON, not the indented beauty seen above. Come on AWS!
+              A little formatting never hurt anyone. 😢<a
+                href="#fnref-1"
+                class="footnote"
+                >&#8617;</a
+              >
+            </p>
+          </li>
+        </ol>
+      </section>
+
+      <div id="about">
+        <img
+          id="portrait"
+          src="https://www.gravatar.com/avatar/fe783e04644862c30823614f31b9a996/?s=360"
+          alt="smiley picture of shaven-head Zev"
+        />
+        <p>
+          American software engineer in Switzerland. Constant learner, teacher,
+          and music-maker. 🌼
+        </p>
+        <div></div>
+        <div id="links">
+          <a
+            href="https://www.dropbox.com/s/zbrwqgn688igce7/Zev_Averbach_Resume_2021.pdf?dl=0"
+          >
+            <svg
+              width="24"
+              height="24"
+              xmlns="http://www.w3.org/2000/svg"
+              fill-rule="evenodd"
+              clip-rule="evenodd"
+            >
+              <style>
+                path {
+                  fill: dodgerblue;
+                }
+              </style>
+              <path
+                d="M3 24h19v-23h-1v22h-18v1zm17-24h-18v22h18v-22zm-1 1h-16v20h16v-20zm-2 16h-12v1h12v-1zm0-3h-12v1h12v-1zm0-3h-12v1h12v-1zm-7.348-3.863l.948.3c-.145.529-.387.922-.725 1.178-.338.257-.767.385-1.287.385-.643 0-1.171-.22-1.585-.659-.414-.439-.621-1.04-.621-1.802 0-.806.208-1.432.624-1.878.416-.446.963-.669 1.642-.669.592 0 1.073.175 1.443.525.221.207.386.505.496.892l-.968.231c-.057-.251-.177-.449-.358-.594-.182-.146-.403-.218-.663-.218-.359 0-.65.129-.874.386-.223.258-.335.675-.335 1.252 0 .613.11 1.049.331 1.308.22.26.506.39.858.39.26 0 .484-.082.671-.248.187-.165.322-.425.403-.779zm3.023 1.78l-1.731-4.842h1.06l1.226 3.584 1.186-3.584h1.037l-1.734 4.842h-1.044z"
+              />
+            </svg>
+          </a>
+
+          <a rel="me" href="https://recurse.social/@zev">
+            <svg
+              height="24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="-0.41 0.22 747.62 801.4499999999999"
+            >
+              <path
+                d="M729.94 479.5c-10.96 56.4-98.17 118.12-198.34 130.08-52.23 6.23-103.66 11.96-158.49 9.44-89.68-4.1-160.45-21.4-160.45-21.4 0 8.73.54 17.04 1.62 24.81 11.66 88.52 87.76 93.82 159.84 96.29 72.76 2.49 137.55-17.94 137.55-17.94l2.99 65.79s-50.89 27.32-141.55 32.35c-50 2.75-112.07-1.26-184.37-20.39C31.94 737.02 4.97 569.86.85 400.26-.41 349.9.37 302.42.37 262.7.37 89.27 113.99 38.44 113.99 38.44 171.28 12.12 269.59 1.06 371.79.22h2.52c102.19.84 200.57 11.9 257.86 38.22 0 0 113.62 50.83 113.62 224.26 0 0 1.42 127.96-15.85 216.8"
+              ></path>
+              <path
+                d="M611.77 276.16v209.99h-83.2V282.33c0-42.97-18.07-64.77-54.23-64.77-39.98 0-60.01 25.86-60.01 77.02v111.57h-82.71V294.58c0-51.16-20.04-77.02-60.01-77.02-36.16 0-54.24 21.8-54.24 64.77v203.82h-83.19V276.16c0-42.92 10.93-77.03 32.88-102.26 22.63-25.23 52.27-38.17 89.07-38.17 42.57 0 74.81 16.37 96.12 49.1l20.72 34.74 20.73-34.74c21.31-32.73 53.55-49.1 96.12-49.1 36.79 0 66.44 12.94 89.07 38.17 21.95 25.23 32.88 59.34 32.88 102.26z"
+              ></path>
+            </svg>
+          </a>
+          <a href="https://github.com/zevaverbach">
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"
+              />
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+    <!-- #body -->
+    <script
+      src="https://cdn.usefathom.com/script.js"
+      data-site="LWJFWQJS"
+      defer
+    ></script>
+    <script src="/static/prism-dark.js"></script>
+    <script>
+      window.onload = function () {
+        let imgs = document.getElementsByTagName("img");
+
+        for (let i = 0; i < imgs.length; i++) {
+          let img = imgs[i];
+          img.title = img.alt;
+        }
+      };
+    </script>
+  </body>
+</html>

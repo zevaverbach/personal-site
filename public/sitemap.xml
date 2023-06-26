@@ -2,7 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
         <loc>https://zev.averba.ch/</loc>
-        <lastmod>2023-06-26T11:24:31.332Z</lastmod>
+        <lastmod>2023-06-26T11:26:43.628Z</lastmod>
     </url>
     <url>
         <loc>https://zev.averba.ch/aws</loc>
@@ -10,14 +10,18 @@
     </url>
     <url>
         <loc>https://zev.averba.ch/go</loc>
-        <lastmod>2023-06-26T11:24:31.252Z</lastmod>
+        <lastmod>2023-06-26T11:26:43.519Z</lastmod>
+    </url>
+    <url>
+        <loc>https://zev.averba.ch/iam</loc>
+        <lastmod>2023-06-26T11:26:43.569Z</lastmod>
     </url>
     <url>
         <loc>https://zev.averba.ch/oops</loc>
-        <lastmod>2023-06-26T11:24:31.302Z</lastmod>
+        <lastmod>2023-06-26T11:26:43.601Z</lastmod>
     </url>
     <url>
         <loc>https://zev.averba.ch/toc</loc>
-        <lastmod>2023-06-26T11:24:31.355Z</lastmod>
+        <lastmod>2023-06-26T11:26:43.651Z</lastmod>
     </url>
 </urlset>
