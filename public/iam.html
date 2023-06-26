@@ -109,6 +109,7 @@ AWSCodeCommitReadOnly
         already resolved my own problem. Nonetheless, remember my preamble about
         wanting to do things <em>properly</em>?
       </p>
+      <h3>Do The Right Thing</h3>
       <p>
         We took a step back and I replicated the initial error by revoking
         <code>AWSCodeCommitFullAccess</code>. He then walked me through creating
@@ -136,6 +137,7 @@ AWSCodeCommitReadOnly
         named <code>beanstalk_least_privileged</code> and attached it to my
         user.
       </p>
+      <h3>Inching Closer</h3>
       <p>
         This <em>nearly</em> resolved the issue, as when I ran
         <code>eb init</code> again, it walked me through its little
@@ -152,7 +154,8 @@ Do you want to set up SSH for your instances?
         to which I gleefully tapped <code>Y</code>. However, once I got all the
         way through the RSA key pair prompts, it blurted out the enigmatic
       </p>
-      <pre><code class="language-bash">ERROR: NotAuthorizedError - Operation Denied. You are not authorized to perform this operation. Encoded authorization failure message: &lt;a bunch of gobbledygook&gt;
+      <pre><code class="language-bash">ERROR: NotAuthorizedError - Operation Denied. You are not authorized to perform this operation. 
+Encoded authorization failure message: &lt;a bunch of gobbledygook&gt;
 </code></pre>
       <p>
         If I were to try and resolve that &quot;encoded authorization failure
@@ -165,7 +168,10 @@ Do you want to set up SSH for your instances?
       </p>
       <pre><code class="language-bash">$ aws sts decode-authorization-message --encoded-message &lt;gobbledygook&gt; 
 
-An error occurred (AccessDenied) when calling the DecodeAuthorizationMessage operation: User: arn:aws:iam::904645255421:user/kindchess-admin is not authorized to perform: sts:DecodeAuthorizationMessage because no identity-based policy allows the sts:DecodeAuthorizationMessage action
+An error occurred (AccessDenied) when calling the DecodeAuthorizationMessage operation: 
+User: arn:aws:iam::904645255421:user/kindchess-admin is not authorized to perform: 
+sts:DecodeAuthorizationMessage because no identity-based policy allows the 
+sts:DecodeAuthorizationMessage action
 </code></pre>
       <p>
         Having added the <code>DecodeAuthorizationMessage</code> permission to
@@ -224,9 +230,11 @@ An error occurred (AccessDenied) when calling the DecodeAuthorizationMessage ope
       </p>
       <h2>Tools For Expedient IAM Generation</h2>
       <p>
-        It's hard for me to accept this slow, iterative process as the state of
-        the art. A Google search yielded a handful of interesting-looking tools
-        which seem like they could save a lot of time and trouble:
+        It's hard for me to accept this slow, iterative process for setting
+        <em>only</em> the needed IAM permissions for a given application as the
+        state of the art. A Google search yielded a handful of
+        interesting-looking tools which seem like they could save a lot of time
+        and trouble:
       </p>
       <p>
         <a href="https://github.com/salesforce/policy_sentry">Policy Sentry</a>
@@ -243,7 +251,10 @@ An error occurred (AccessDenied) when calling the DecodeAuthorizationMessage ope
       <p>
         These are in descending order of their most recent commit, Policy Sentry
         being the only one which has a 2023 commit so far. I'll reach for one of
-        these if (when) this process becomes too onerous.
+        these if (when) this process becomes too onerous, and I've also got my
+        eye on
+        <a href="https://aws.amazon.com/cdk/">the Cloud Development Kit</a>
+        (CDK) and some of the abstractions built on top of it.
       </p>
       <h2>Trudging On</h2>
       <p>
