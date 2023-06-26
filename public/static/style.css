@@ -143,9 +143,15 @@ img {
   font-size: calc(.8em + .1vw);
 }
 
+.footnotes li {
+  display: flex;
+  align-items: baseline;
+}
+
 .footnotes li::before {
   counter-increment: footnote;
   content: counter(footnote) ". ";
+  margin-right: 0.5em; /* Optional: add some spacing after the number */
 }
 
 
