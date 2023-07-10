@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html class="no-js" lang="en">
   <head>
     <meta charset="utf-8" />
@@ -6,7 +6,7 @@
     <meta name="description" content="How to initially approach IAM." />
     <meta name="keywords" content="programming, devops, architecture, AWS" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="robots" content "index, follow">
+    <meta name="robots" content="index, follow" />
 
     <meta property="og:title" content="Iterative IAM-ing" />
     <meta property="og:url" content="https://zev.averba.ch/iam" />
@@ -228,6 +228,45 @@ sts:DecodeAuthorizationMessage action
           >on Hacker News</a
         >, and he said this is more or less what he recommends.
       </p>
+      <h3>Extra Wisdom from Shashank: The Docs</h3>
+      <p>
+        A couple days after the above events, I got stuck again after having
+        removed all the broad permissions I'd originally made to try and get
+        things moving, and walking through the iterative &quot;try-fail&quot;
+        process of granting the minimum viable ones.
+      </p>
+      <p>
+        I created a new support ticket, and just like the first one it actually
+        resolved itself by the time (a few minutes later) I connected with
+        someone. Distributed computing is hard, I guess, and AWS itself is not
+        immune: In some cases you have to wait something like an entire minute
+        for an IAM permission change to go through.
+      </p>
+      <p>
+        I of course kept my new friend Shashank on the line to see what
+        additional wisdom I could gain from him, and he really delivered:
+      </p>
+      <p>
+        He pointed me to
+        <a
+          href="https://docs.aws.amazon.com/service-authorization/latest/reference/reference_policies_actions-resources-contextkeys.html"
+          >&quot;the bible&quot; of IAM permissions</a
+        >, which is located at a pretty humble URL 👈. You can find out all the
+        possible IAM permissions for a given AWS service there, as well as the
+        applicable &quot;resources&quot;. He also claimed that by perusing these
+        docs he can often generate the required JSON permissions the first or
+        second time. We used this resource together to help me get the hang of
+        it, and I'm expecting to be using it heavily.
+      </p>
+      <h3>Shashank Wisdom Part Deux: CloudTrail</h3>
+      <p>
+        Then Shashank told me about CloudTrail, which gives you a nearly
+        comprehensive log of all the AWS API calls your users are doing. We
+        added the &quot;Error code&quot; field and this became a game-changer:
+        Now whenever I got an overly vague (or event silent) error while trying
+        to do console- or CLI-based operations, I can look here to see exactly
+        which IAM permission is missing.
+      </p>
       <h2>Tools For Expedient IAM Generation</h2>
       <p>
         It's hard for me to accept this slow, iterative process for setting
@@ -258,9 +297,18 @@ sts:DecodeAuthorizationMessage action
       </p>
       <h2>Trudging On</h2>
       <p>
-        Wish me luck on the deployment! With any luck I'll have
-        <a href="https://kindchess.com">KindChess</a> migrated to AWS today.
+        Wish me luck on the deployment! After these initial steps with Elastic
+        Beanstalk I'm actually retreating a bit in order to learn to deploy it
+        in a more &quot;manual&quot; way, meaning setting up autoscaling, load
+        balancing, and wiring up databases on my own. In fact, I'm knee deep in
+        <a href="https://www.youtube.com/watch?v=SOTamWNgDKc"
+          >this FreeCodeCamp course</a
+        >
+        and have scheduled a Cloud Practitioner exam a few weeks from now. One
+        notable thing from this course is that, so far (25% of the way through)
+        the instructor has us using an extremely wide open access policy.
       </p>
+      <p>&lt;!--TODO: link to any sequel posts--&gt;</p>
       <section class="footnotes">
         <ol>
           <li id="fn-1">
@@ -361,7 +409,7 @@ sts:DecodeAuthorizationMessage action
         }
 
         const prefersDarkScheme = window.matchMedia(
-          "(prefers-color-scheme: dark)"
+          "(prefers-color-scheme: dark)",
         );
 
         // Set a class on the html element
