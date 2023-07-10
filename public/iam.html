@@ -251,7 +251,7 @@ sts:DecodeAuthorizationMessage action
         <a
           href="https://docs.aws.amazon.com/service-authorization/latest/reference/reference_policies_actions-resources-contextkeys.html"
           >&quot;the bible&quot; of IAM permissions</a
-        >, which is located at a pretty humble URL 👈. You can find out all the
+        >, which is located at a pretty humble URL 👆. You can find out all the
         possible IAM permissions for a given AWS service there, as well as the
         applicable &quot;resources&quot;. He also claimed that by perusing these
         docs he can often generate the required JSON permissions the first or
@@ -261,11 +261,12 @@ sts:DecodeAuthorizationMessage action
       <h3>Shashank Wisdom Part Deux: CloudTrail</h3>
       <p>
         Then Shashank told me about CloudTrail, which gives you a nearly
-        comprehensive log of all the AWS API calls your users are doing. We
-        added the &quot;Error code&quot; field and this became a game-changer:
-        Now whenever I got an overly vague (or event silent) error while trying
-        to do console- or CLI-based operations, I can look here to see exactly
-        which IAM permission is missing.
+        comprehensive log of the AWS API calls your users are doing. We added
+        the &quot;Error code&quot; field and this became a game-changer: Now
+        whenever I get an overly vague (or event silent) error while trying to
+        do console- or CLI-based operations, I can look here to see exactly
+        which IAM permission is missing, or any other errors which may have
+        occurred..
       </p>
       <h2>Tools For Expedient IAM Generation</h2>
       <p>
@@ -308,7 +309,8 @@ sts:DecodeAuthorizationMessage action
         notable thing from this course is that, so far (25% of the way through)
         the instructor has us using an extremely wide open access policy.
       </p>
-      <p>&lt;!--TODO: link to any sequel posts--&gt;</p>
+      <!--TODO: link to any sequel posts-->
+
       <section class="footnotes">
         <ol>
           <li id="fn-1">
