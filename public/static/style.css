@@ -101,18 +101,20 @@ h1.title, h2, h3 {
 }
 
 li { 
-  padding-left: 1em; 
-  list-style: none;
+  margin-left: 3em; 
 }
 
-ul {
-  list-style: none;
+li, li code {
+  font-size: calc(1em + .1vw);
+  color: var(--my-paragraph-color);
 }
 
 p {
   font-size: calc(1.25em + .1vw);
   color: var(--my-paragraph-color);
 }
+
+
 
 p:not(#about p) { 
   line-height: 1.6em;
