@@ -108,6 +108,10 @@ li {
   margin-left: 3em; 
 }
 
+.footnotes li {
+  margin-left: 2em;
+}
+
 li, li code {
   font-size: calc(1em + .1vw);
   color: var(--my-paragraph-color);
@@ -156,7 +160,7 @@ img {
   counter-reset: footnote;
 }
 
-.footnotes p {
+.footnotes p, .footnotes li::before {
   font-size: calc(.8em + .1vw);
 }
 
