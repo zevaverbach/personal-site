@@ -2,23 +2,26 @@
 <html class="no-js" lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>How To Download All Your Freshbooks Clients and Invoices</title>
+    <title>How To Determine The Time Left in a Teachable Course</title>
     <meta
       name="description"
-      content="Using my Freshbooks API wrapper, download all your data in JSON format."
+      content="Some quick JavaScript console scraping to determine how much longer the remaining content is in your Teachable course."
     />
-    <meta name="keywords" content="freshbooks, Python, API, download" />
+    <meta name="keywords" content="teachable, JavaScript, scraping" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="robots" content="index, follow" />
 
     <meta
       property="og:title"
-      content="How To Download All Your Freshbooks Clients and Invoices"
+      content="How To Determine The Time Left in a Teachable Course"
     />
-    <meta property="og:url" content="https://zev.averba.ch/freshbooks" />
+    <meta
+      property="og:url"
+      content="https://zev.averba.ch/teachable_progress"
+    />
     <meta
       property="og:description"
-      content="Using my Freshbooks API wrapper, download all your data in JSON format."
+      content="Some quick JavaScript console scraping to determine how much longer the remaining content is in your Teachable course."
     />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Zev Averbach" />
@@ -28,7 +31,7 @@
     <link href="/static/prism-dark.css" rel="stylesheet" />
     <link rel="stylesheet" href="/static/style.css" />
     <meta name="theme-color" content="#209cee" />
-    <link rel="canonical" href="https://zev.averba.ch/freshbooks" />
+    <link rel="canonical" href="https://zev.averba.ch/teachable_progress" />
   </head>
   <body>
     <nav>
@@ -36,130 +39,72 @@
         <a href="https://zev.averba.ch" class="logo"> Zev Averbach: </a>
 
         <h1 class="title">
-          How To Download All Your Freshbooks Clients and Invoices
+          How To Determine The Time Left in a Teachable Course
         </h1>
       </div>
     </nav>
     <div id="body">
       <p>
-        I closed my transcription business a month ago but still had some
-        outstanding invoices to collect, and they all lived in Freshbooks.
-        However, I canceled my Freshbooks subscription -- prepaid through
-        mid-July 2023 -- and so needed to download all the info, at least about
-        the outstanding invoices<sup class="footnote-ref" id="fnref-1"
-          ><a href="#fn-1">1</a></sup
-        >.
+        Hey, here's how to quickly figure out how much longer your Teachable
+        course is:
+      </p>
+      <pre><code class="language-javascript">function getTotalMinutesLeftInCourse() {
+  let totalMinutes = 0;
+  for (const chapter of getChapters()) {
+    console.log(chapter.innerText)
+    if (!chapterIsComplete(chapter)) {
+      const [minutes, seconds] = getMinutesAndSeconds(getLengthString(chapter.innerText))
+      totalMinutes += (minutes + (seconds / 60))
+    }
+  }
+  return totalMinutes
+}
+
+function getChapters() {
+  return document.querySelectorAll(&quot;.title-container&quot;);
+}
+
+function chapterIsComplete(chapter) {
+  return chapter.previousElementSibling.getAttribute(&quot;aria-label&quot;) === &quot;Completed item&quot;
+}
+
+function getLengthString(string) {
+  const lengthString = string.match(/\d:\d\d/)
+  if (lengthString == null) {
+      // this only happens with quizzes, which is accurate
+      console.log(string, 'no match for length');
+      return &quot;0:00&quot;
+  }
+  return lengthString[0];
+}
+
+function getMinutesAndSeconds(lengthString) {
+  let [minutes, seconds] = lengthString.split(&quot;:&quot;)
+  return [parseInt(minutes), parseInt(seconds)]
+}
+</code></pre>
+      <p>
+        Copy-paste it into your JavaScript console when on the &quot;Course
+        Curriculum&quot; page of whatever course you like, then call
+        <code>main()</code>.
       </p>
       <p>
-        I figured, though, that I may as well download the entire archive of
-        clients and invoices -- 10+ years' worth! -- for future marketing
-        purposes, and just to have a nice record of the business.
+        I made this script because I'm working through
+        <a
+          href="https://learn.cantrill.io/p/aws-certified-solutions-architect-associate-saa-c03"
+          >Adrian Cantrill's AWS Certified Solutions Architect - Associate
+          course</a
+        >
+        (highly recommended by the way!) and wanted to figure out how much
+        content I need to work through each day between now and the exam.
       </p>
       <p>
-        Luckily, I had published
-        <a href="https://pypi.org/project/avt-fresh/">this Python library</a>
-        for interacting with the Freshbooks API, which got me most of the way
-        towards downloading, serializing and storing all the client and invoice
-        data.
+        The code is also available
+        <a
+          href="https://gist.github.com/zevaverbach/2f8639ccb2c5c58ce707027cc3657b0a"
+          >in this gist</a
+        >. Use it in good health!
       </p>
-      <h2>Setup</h2>
-      <pre><code class="language-bash">&gt; mkdir all_my_invoices &amp;&amp; cd $_
-&gt; virtualenv env &amp;&amp; source env/bin/activate
-&gt; pip install ipython simplejson avt-fresh
-</code></pre>
-      <h2>Get All Clients and Serialize 'Em</h2>
-      <pre><code class="language-python">import avt_fresh
-import json as j
-import pathlib as p
-cl = avt_fresh.ApiClient(client_secret=&quot;...&quot;, client_id=&quot;...&quot;, redirect_uri=&quot;...&quot;, account_id=&quot;...&quot;)
-clients = cl.get_all_clients()
-client_ids = [c.client_id for c in clients]
-clients_json = []
-for client in clients:
-    d = c._asdict()
-    del d['email_contact_id_lookup']
-    del d['contact_id_email_lookup']
-    clients_json.append(d)
-p.Path('all_my_clients.json').write_text(j.dumps(clients_json, indent=2)) 
-</code></pre>
-      <h2>Get All Invoices For All Clients and Serialize 'Em</h2>
-      <pre><code class="language-python">import avt_fresh
-import simplejson as json
-import pathlib as p
-
-cl = avt_fresh.ApiClient(client_secret=&quot;...&quot;, client_id=&quot;...&quot;, redirect_uri=&quot;...&quot;, account_id=&quot;...&quot;)
-
-
-def get_and_serialize_all_invoices_for_client(client_id):
-    invs = cl.get_all_invoices_for_client_id(client_id)
-    serialized = []
-    for i in invs:
-        d = i._asdict()
-        for key, val in d.items():
-            if isinstance(val, dt.date):
-                d[key] = val.toordinal()
-        # some data 
-        del d['allowed_gateways']
-        del d['line_description_line_id_dict']
-        del d['line_id_line_dict']
-        new_lines = []
-        for l in d['lines']:
-            dl = l._asdict()
-            for key, val in dl.items():
-                if isinstance(val, dt.date):
-                    dl[key] = val.toordinal()
-            new_lines.append(dl)
-        d['lines'] = new_lines
-        serialized.append(d)
-    return serialized
-
-clients = json.loads(p.Path('all_my_clients.json').read_text())
-invoices = {}
-for client_id in client_ids:
-    invoices[client_id] = get_and_serialize_all_invoices_for_client(client_id)
-p.Path('all_client_invoices.json').write_text(json.dumps(invoices, indent=2)) 
-</code></pre>
-      <h2>Future Improvements</h2>
-      <p>
-        I'm not sure how likely I am to circle back and improve this library
-        since I don't expect to use Freshbooks again in the future. However,
-        there are a few low-hanging fruits which would make it a little nicer to
-        work with, especially when it comes to serialization:
-      </p>
-      <ul>
-        <li>
-          use <code>dataclasses</code> instead of <code>NamedTuples</code>
-        </li>
-        <li>
-          make the invoices and clients more serializable with maybe a
-          <code>serialize</code> method which handles the <code>date</code> and
-          <code>Decimal</code> objects
-        </li>
-        <li>
-          explain in the docs how pagination is abstracted away, which is kind
-          of nice
-        </li>
-        <li>parallelize the API calls by default</li>
-      </ul>
-      <section class="footnotes">
-        <ol>
-          <li id="fn-1">
-            <p>
-              I should mention that Freshbooks is the <em>only</em> SaaS I've
-              run into that will immediately shut your account down when you
-              cancel your account,
-              <em>even if you've already paid for a year's subscription</em>! I
-              had to beg them to give me a brief window of access in order to
-              perform the above steps -- five days to be exact, even though I
-              still had 2+ weeks left in the prepaid subscription.<a
-                href="#fnref-1"
-                class="footnote"
-                >&#8617;</a
-              >
-            </p>
-          </li>
-        </ol>
-      </section>
 
       <div id="about">
         <img
