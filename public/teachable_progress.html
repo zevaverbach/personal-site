@@ -51,7 +51,6 @@
       <pre><code class="language-javascript">function getTotalMinutesLeftInCourse() {
   let totalMinutes = 0;
   for (const chapter of getChapters()) {
-    console.log(chapter.innerText)
     if (!chapterIsComplete(chapter)) {
       const [minutes, seconds] = getMinutesAndSeconds(getLengthString(chapter.innerText))
       totalMinutes += (minutes + (seconds / 60))
