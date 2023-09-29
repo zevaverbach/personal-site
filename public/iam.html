@@ -27,7 +27,7 @@
       <div id="logo">
         <a href="https://zev.averba.ch" class="logo"> Zev Averbach: </a>
 
-        <h1 class="title">Iterative IAM-ing</h1>
+        <h1 class="title" style="color: #ffe01c">Iterative IAM-ing</h1>
       </div>
     </nav>
     <div id="body">
@@ -47,10 +47,14 @@
         well as a one-hour guaranteed turnaround. (no, this isn't a sponsored
         post! 😝)
       </p>
-      <h2>My First Ticket</h2>
+      <h2 style="color: #ffe01c">My First Ticket</h2>
       <p>
         I'd immediately gotten stuck in deploying
-        <a href="https://github.com/zevaverbach/kindchess">my chess server</a>
+        <a
+          style="color: #ffe01c"
+          href="https://github.com/zevaverbach/kindchess"
+          >my chess server</a
+        >
         to Elastic Beanstalk because of permissions errors, despite adding what
         I thought were a number of wide open (back to my old habits! 😊)
         AWS-managed policies. Part of my problem was that the error given in the
@@ -60,6 +64,7 @@
       <p>
         ChatGPT nudged me towards
         <a
+          style="color: #ffe01c"
           href="https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/eb-cli3.html"
           >the Elastic Beanstalk CLI</a
         >, and when I used it to <code>eb init</code> Beanstalk in my local repo
@@ -92,7 +97,7 @@ AWSCodeCommitReadOnly
         <code>AWSCodeCommitFullAccess</code> permission to my role, but
         surprisingly this didn't make the CLI error disappear.
       </p>
-      <h2>The Support Call</h2>
+      <h2 style="color: #ffe01c">The Support Call</h2>
       <p>
         I was pleased to receive a call from a nice person named Varun within 10
         minutes after creating the ticket. The connection was great, and once we
@@ -110,12 +115,14 @@ AWSCodeCommitReadOnly
         already resolved my own problem. Nonetheless, remember my preamble about
         wanting to do things <em>properly</em>?
       </p>
-      <h3>Do The Right Thing</h3>
+      <h3 style="color: #ffe01c">Do The Right Thing</h3>
       <p>
         We took a step back and I replicated the initial error by revoking
         <code>AWSCodeCommitFullAccess</code>. He then walked me through creating
         a custom permission
-        <a href="https://us-east-1.console.aws.amazon.com/iamv2/home#/policies"
+        <a
+          style="color: #ffe01c"
+          href="https://us-east-1.console.aws.amazon.com/iamv2/home#/policies"
           >here</a
         >, which was relatively straightforward. To repeat a common complaint,
         the UI/UX is not amazing on AWS; I appreciate minimalism, but IMO there
@@ -138,7 +145,7 @@ AWSCodeCommitReadOnly
         named <code>beanstalk_least_privileged</code> and attached it to my
         user.
       </p>
-      <h3>Inching Closer</h3>
+      <h3 style="color: #ffe01c">Inching Closer</h3>
       <p>
         This <em>nearly</em> resolved the issue, as when I ran
         <code>eb init</code> again, it walked me through its little
@@ -205,7 +212,7 @@ sts:DecodeAuthorizationMessage action
         A new error is almost always an encouraging sign, right<sup
           class="footnote-ref"
           id="fnref-1"
-          ><a href="#fn-1">1</a></sup
+          ><a style="color: #ffe01c" href="#fn-1">1</a></sup
         >?
       </p>
       <p>
@@ -213,7 +220,7 @@ sts:DecodeAuthorizationMessage action
         <code>ec2:ImportKeyPair</code> permission is missing. Having added that,
         everything ran as expected! Whew.
       </p>
-      <h3>Extra Wisdom From an AMA With Arun</h3>
+      <h3 style="color: #ffe01c">Extra Wisdom From an AMA With Arun</h3>
       <p>
         Without any cajoling on my part, Arun stayed on the line with me while I
         threw a bunch of newbie IAM-related questions at him. That's when I got
@@ -225,11 +232,13 @@ sts:DecodeAuthorizationMessage action
         groups are using, or should use: He said the console or the CLI should
         be sufficient. I told him about the &quot;try to spin up cloud asset,
         get error, add new permission&quot; cycle that I saw echoed
-        <a href="https://news.ycombinator.com/item?id=24091875"
+        <a
+          style="color: #ffe01c"
+          href="https://news.ycombinator.com/item?id=24091875"
           >on Hacker News</a
         >, and he said this is more or less what he recommends.
       </p>
-      <h3>Extra Wisdom from Shashank: The Docs</h3>
+      <h3 style="color: #ffe01c">Extra Wisdom from Shashank: The Docs</h3>
       <p>
         A couple days after the above events, I got stuck again after having
         removed all the broad permissions I'd originally made to try and get
@@ -250,6 +259,7 @@ sts:DecodeAuthorizationMessage action
       <p>
         He pointed me to
         <a
+          style="color: #ffe01c"
           href="https://docs.aws.amazon.com/service-authorization/latest/reference/reference_policies_actions-resources-contextkeys.html"
           >&quot;the bible&quot; of IAM permissions</a
         >, which is located at a pretty humble URL 👆. You can find out all the
@@ -259,7 +269,7 @@ sts:DecodeAuthorizationMessage action
         second time. We used this resource together to help me get the hang of
         it, and I'm expecting to be using it heavily.
       </p>
-      <h3>Shashank Wisdom Part Deux: CloudTrail</h3>
+      <h3 style="color: #ffe01c">Shashank Wisdom Part Deux: CloudTrail</h3>
       <p>
         Then Shashank told me about CloudTrail, which gives you a nearly
         comprehensive log of the AWS API calls your users are doing. We added
@@ -269,7 +279,7 @@ sts:DecodeAuthorizationMessage action
         which IAM permission is missing, or any other errors which may have
         occurred..
       </p>
-      <h2>Tools For Expedient IAM Generation</h2>
+      <h2 style="color: #ffe01c">Tools For Expedient IAM Generation</h2>
       <p>
         It's hard for me to accept this slow, iterative process for setting
         <em>only</em> the needed IAM permissions for a given application as the
@@ -278,32 +288,46 @@ sts:DecodeAuthorizationMessage action
         and trouble:
       </p>
       <p>
-        <a href="https://github.com/salesforce/policy_sentry">Policy Sentry</a>
+        <a
+          style="color: #ffe01c"
+          href="https://github.com/salesforce/policy_sentry"
+          >Policy Sentry</a
+        >
         from Salesforce
       </p>
       <p>
-        <a href="https://github.com/Netflix-Skunkworks/aardvark">Aardvark</a>
+        <a
+          style="color: #ffe01c"
+          href="https://github.com/Netflix-Skunkworks/aardvark"
+          >Aardvark</a
+        >
         from Netflix
       </p>
       <p>
-        <a href="https://github.com/Netflix/Repokid">repokid</a> also from
-        Netflix
+        <a style="color: #ffe01c" href="https://github.com/Netflix/Repokid"
+          >repokid</a
+        >
+        also from Netflix
       </p>
       <p>
         These are in descending order of their most recent commit, Policy Sentry
         being the only one which has a 2023 commit so far. I'll reach for one of
         these if (when) this process becomes too onerous, and I've also got my
         eye on
-        <a href="https://aws.amazon.com/cdk/">the Cloud Development Kit</a>
+        <a style="color: #ffe01c" href="https://aws.amazon.com/cdk/"
+          >the Cloud Development Kit</a
+        >
         (CDK) and some of the abstractions built on top of it.
       </p>
-      <h2>Trudging On</h2>
+      <h2 style="color: #ffe01c">Trudging On</h2>
       <p>
         Wish me luck on the deployment! After these initial steps with Elastic
         Beanstalk I'm actually retreating a bit in order to learn to deploy it
         in a more &quot;manual&quot; way, meaning setting up autoscaling, load
         balancing, and wiring up databases on my own. In fact, I'm knee deep in
-        <a href="https://www.youtube.com/watch?v=SOTamWNgDKc"
+        <a
+          style="color: #ffe01c"
+          href="https://www.youtube.com/watch?v=SOTamWNgDKc"
           >this FreeCodeCamp course</a
         >
         and have scheduled a Cloud Practitioner exam a few weeks from now. One
@@ -319,6 +343,7 @@ sts:DecodeAuthorizationMessage action
               Incidentally, the error was displayed in ugly, backslash-filled,
               unformatted JSON, not the indented beauty seen above. Come on AWS!
               A little formatting never hurt anyone. 😢<a
+                style="color: #ffe01c"
                 href="#fnref-1"
                 class="footnote"
                 >&#8617;</a
@@ -329,19 +354,21 @@ sts:DecodeAuthorizationMessage action
       </section>
 
       <div id="about">
-        <img
-          id="portrait"
-          src="https://www.gravatar.com/avatar/fe783e04644862c30823614f31b9a996/?s=360"
-          alt="smiley picture of shaven-head Zev"
-        />
+        <a href="/"
+          ><img
+            id="portrait"
+            src="https://www.gravatar.com/avatar/fe783e04644862c30823614f31b9a996/?s=360"
+            alt="smiley picture of shaven-head Zev"
+        /></a>
         <p>
           American software engineer in Switzerland. Constant builder, learner,
           and teacher. 🌼
         </p>
         <div></div>
         <div id="links">
-          <a href="static/resume.pdf">
+          <a style="color: #ffe01c" href="static/resume.pdf">
             <svg
+              style="fill: #ffe01c"
               class="about-icon"
               width="24"
               height="24"
@@ -357,8 +384,13 @@ sts:DecodeAuthorizationMessage action
             </svg>
           </a>
 
-          <a href="https://www.linkedin.com/in/zev-averbach-964572156/">
+          <a
+            style="color: #ffe01c"
+            href="https://www.linkedin.com/in/zev-averbach-964572156/"
+          >
             <svg
+              style="fill: #ffe01c"
+              class="about-icon"
               xmlns="http://www.w3.org/2000/svg"
               xmlns:xlink="http://www.w3.org/1999/xlink"
               id="body_1"
@@ -391,8 +423,9 @@ sts:DecodeAuthorizationMessage action
             </svg>
           </a>
 
-          <a href="https://github.com/zevaverbach">
+          <a style="color: #ffe01c" href="https://github.com/zevaverbach">
             <svg
+              style="fill: #ffe01c"
               class="about-icon"
               width="24"
               height="24"

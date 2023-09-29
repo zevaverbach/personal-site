@@ -39,7 +39,7 @@
       <div id="logo">
         <a href="https://zev.averba.ch" class="logo"> Zev Averbach: </a>
 
-        <h1 class="title">
+        <h1 class="title" style="color: #8fc33e">
           Oops, I Did It Again: Automatically Encrypting Secrets
         </h1>
       </div>
@@ -54,11 +54,12 @@
       <p>
         (tl;dr use the code and brief instructions in
         <a
+          style="color: #8fc33e"
           href="https://gist.github.com/zevaverbach/85745043a417fcef2feb018deaac0cd9"
           >this gist</a
         >.)
       </p>
-      <h2>First: Damage Control</h2>
+      <h2 style="color: #8fc33e">First: Damage Control</h2>
       <p>
         I shared three secret tokens actually, about 24 hours ago when I pushed
         an update of my <code>.bashrc</code> to a public repo. This repo was
@@ -83,10 +84,11 @@ fi
         I removed all the tokens from the other two providers, and made the
         <code>.bashrc</code> repo private for now.
       </p>
-      <h2>Next: Encryption</h2>
+      <h2 style="color: #8fc33e">Next: Encryption</h2>
       <p>
         I'd first heard of keeping secrets in public repos by encrypting them in
         <a
+          style="color: #8fc33e"
           href="https://frontendmasters.com/courses/developer-productivity/store-ssh-auth-keys-with-ansible-vault/"
           >this section</a
         >
@@ -99,10 +101,12 @@ fi
       <p>
         after having
         <a
+          style="color: #8fc33e"
           href="https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html"
           >installed ansible</a
         >. Easy enough! As a bonus, the algorithm it uses is
         <a
+          style="color: #8fc33e"
           href="https://en.wikipedia.org/wiki/Post-quantum_cryptography#Symmetric_key_quantum_resistance"
           >probably quantum-safe</a
         >. 🤖
@@ -111,11 +115,12 @@ fi
         There are several other viable options for two-way encryption of
         secrets, Mozilla's SOPS being one, FYI.
       </p>
-      <h2>Alerts For Unencrypted Secret Files</h2>
+      <h2 style="color: #8fc33e">Alerts For Unencrypted Secret Files</h2>
       <p>
         Now, how to abort and alert when committing code which contains
         unencrypted secrets?
         <a
+          style="color: #8fc33e"
           href="https://devops.stackexchange.com/questions/16317/how-to-ansible-vault-files-as-they-are-commited-to-git?newreg=a7e3811180a7401ea428511549dd5a09"
           >This DevOps StackExchange question</a
         >
@@ -174,15 +179,19 @@ $ git config --global core.hooksPath ~/.githooks
 $ mv .git/hooks/pre-commit ~/.githooks
 $ chmod +x ~/.githooks/pre-commit
 </code></pre>
-      <h2>Automatically Encrypt Files On Commit</h2>
+      <h2 style="color: #8fc33e">Automatically Encrypt Files On Commit</h2>
       <p>
         How to automate the encryption of these secret files, though? There's no
         such automation in
-        <a href="https://devops.stackexchange.com/a/16333/40029"
+        <a
+          style="color: #8fc33e"
+          href="https://devops.stackexchange.com/a/16333/40029"
           >the StackExchange answer</a
         >, but there is a bash script provided to encrypt or decrypt manually.
         What's more, there's an improved version of that script in
-        <a href="https://warlord0blog.wordpress.com/2022/12/05/git-hooks/"
+        <a
+          style="color: #8fc33e"
+          href="https://warlord0blog.wordpress.com/2022/12/05/git-hooks/"
           >this blog post</a
         >, the improvement being that it skips any already encrypted files which
         match the <code>FILE_PATTERN</code> instead of breaking out of the
@@ -255,7 +264,7 @@ Located a staged file that should be encrypted:
 .bashrc
 Encryption successful
 </code></pre>
-      <h2>Automatically Decrypt Files After Commit</h2>
+      <h2 style="color: #8fc33e">Automatically Decrypt Files After Commit</h2>
       <p>
         The pre-commit hook will work for making sure the secrets are encrypted,
         but I actually want to immediately decrypt those secrets once the commit
@@ -338,7 +347,7 @@ export OPENAI_KEY=&quot;sk-hithisisntreallymykey0Kivelearnedmylesson&quot;
         perfect solution since I'll constantly have unstaged changes showing for
         my secret files, but I'm willing to live with it.
       </p>
-      <h2>What About Post-Checkout and Post-Pull?</h2>
+      <h2 style="color: #8fc33e">What About Post-Checkout and Post-Pull?</h2>
       <p>
         One flaw I can't live with is that if I check out a different branch or
         commit of this repo, the secrets-containing files will be encrypted.
@@ -352,7 +361,7 @@ $ cp ~/.githooks/post-commit ~/.githooks/post-merge
         It works perfectly for checkout, but I haven't tested it for pull/merge
         yet.
       </p>
-      <h2>The End</h2>
+      <h2 style="color: #8fc33e">The End</h2>
       <p>
         I think this will suffice for automatically encrypting secrets on
         commit. The biggest point of failure is <code>FILE_PATTERN</code>, which
@@ -360,19 +369,21 @@ $ cp ~/.githooks/post-commit ~/.githooks/post-merge
       </p>
 
       <div id="about">
-        <img
-          id="portrait"
-          src="https://www.gravatar.com/avatar/fe783e04644862c30823614f31b9a996/?s=360"
-          alt="smiley picture of shaven-head Zev"
-        />
+        <a href="/"
+          ><img
+            id="portrait"
+            src="https://www.gravatar.com/avatar/fe783e04644862c30823614f31b9a996/?s=360"
+            alt="smiley picture of shaven-head Zev"
+        /></a>
         <p>
           American software engineer in Switzerland. Constant builder, learner,
           and teacher. 🌼
         </p>
         <div></div>
         <div id="links">
-          <a href="static/resume.pdf">
+          <a style="color: #8fc33e" href="static/resume.pdf">
             <svg
+              style="fill: #8fc33e"
               class="about-icon"
               width="24"
               height="24"
@@ -388,8 +399,13 @@ $ cp ~/.githooks/post-commit ~/.githooks/post-merge
             </svg>
           </a>
 
-          <a href="https://www.linkedin.com/in/zev-averbach-964572156/">
+          <a
+            style="color: #8fc33e"
+            href="https://www.linkedin.com/in/zev-averbach-964572156/"
+          >
             <svg
+              style="fill: #8fc33e"
+              class="about-icon"
               xmlns="http://www.w3.org/2000/svg"
               xmlns:xlink="http://www.w3.org/1999/xlink"
               id="body_1"
@@ -422,8 +438,9 @@ $ cp ~/.githooks/post-commit ~/.githooks/post-merge
             </svg>
           </a>
 
-          <a href="https://github.com/zevaverbach">
+          <a style="color: #8fc33e" href="https://github.com/zevaverbach">
             <svg
+              style="fill: #8fc33e"
               class="about-icon"
               width="24"
               height="24"

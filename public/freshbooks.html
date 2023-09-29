@@ -36,7 +36,7 @@
       <div id="logo">
         <a href="https://zev.averba.ch" class="logo"> Zev Averbach: </a>
 
-        <h1 class="title">
+        <h1 class="title" style="color: #ffa500">
           How To Download All Your Freshbooks Clients and Invoices
         </h1>
       </div>
@@ -48,7 +48,7 @@
         However, I canceled my Freshbooks subscription -- prepaid through
         mid-July 2023 -- and so needed to download all the info, at least about
         the outstanding invoices<sup class="footnote-ref" id="fnref-1"
-          ><a href="#fn-1">1</a></sup
+          ><a style="color: #ffa500" href="#fn-1">1</a></sup
         >.
       </p>
       <p>
@@ -58,17 +58,19 @@
       </p>
       <p>
         Luckily, I had published
-        <a href="https://pypi.org/project/avt-fresh/">this Python library</a>
+        <a style="color: #ffa500" href="https://pypi.org/project/avt-fresh/"
+          >this Python library</a
+        >
         for interacting with the Freshbooks API, which got me most of the way
         towards downloading, serializing and storing all the client and invoice
         data.
       </p>
-      <h2>Setup</h2>
+      <h2 style="color: #ffa500">Setup</h2>
       <pre><code class="language-bash">&gt; mkdir all_my_invoices &amp;&amp; cd $_
 &gt; virtualenv env &amp;&amp; source env/bin/activate
 &gt; pip install ipython simplejson avt-fresh
 </code></pre>
-      <h2>Get All Clients and Serialize 'Em</h2>
+      <h2 style="color: #ffa500">Get All Clients and Serialize 'Em</h2>
       <pre><code class="language-python">import avt_fresh
 import json as j
 import pathlib as p
@@ -83,7 +85,9 @@ for client in clients:
     clients_json.append(d)
 p.Path('all_my_clients.json').write_text(j.dumps(clients_json, indent=2)) 
 </code></pre>
-      <h2>Get All Invoices For All Clients and Serialize 'Em</h2>
+      <h2 style="color: #ffa500">
+        Get All Invoices For All Clients and Serialize 'Em
+      </h2>
       <pre><code class="language-python">import avt_fresh
 import simplejson as json
 import pathlib as p
@@ -120,7 +124,7 @@ for client_id in client_ids:
     invoices[client_id] = get_and_serialize_all_invoices_for_client(client_id)
 p.Path('all_client_invoices.json').write_text(json.dumps(invoices, indent=2)) 
 </code></pre>
-      <h2>Future Improvements</h2>
+      <h2 style="color: #ffa500">Future Improvements</h2>
       <p>
         I'm not sure how likely I am to circle back and improve this library
         since I don't expect to use Freshbooks again in the future. However,
@@ -153,6 +157,7 @@ p.Path('all_client_invoices.json').write_text(json.dumps(invoices, indent=2))
               had to beg them to give me a brief window of access in order to
               perform the above steps -- five days to be exact, even though I
               still had 2+ weeks left in the prepaid subscription.<a
+                style="color: #ffa500"
                 href="#fnref-1"
                 class="footnote"
                 >&#8617;</a
@@ -163,19 +168,21 @@ p.Path('all_client_invoices.json').write_text(json.dumps(invoices, indent=2))
       </section>
 
       <div id="about">
-        <img
-          id="portrait"
-          src="https://www.gravatar.com/avatar/fe783e04644862c30823614f31b9a996/?s=360"
-          alt="smiley picture of shaven-head Zev"
-        />
+        <a href="/"
+          ><img
+            id="portrait"
+            src="https://www.gravatar.com/avatar/fe783e04644862c30823614f31b9a996/?s=360"
+            alt="smiley picture of shaven-head Zev"
+        /></a>
         <p>
           American software engineer in Switzerland. Constant builder, learner,
           and teacher. 🌼
         </p>
         <div></div>
         <div id="links">
-          <a href="static/resume.pdf">
+          <a style="color: #ffa500" href="static/resume.pdf">
             <svg
+              style="fill: #ffa500"
               class="about-icon"
               width="24"
               height="24"
@@ -191,8 +198,13 @@ p.Path('all_client_invoices.json').write_text(json.dumps(invoices, indent=2))
             </svg>
           </a>
 
-          <a href="https://www.linkedin.com/in/zev-averbach-964572156/">
+          <a
+            style="color: #ffa500"
+            href="https://www.linkedin.com/in/zev-averbach-964572156/"
+          >
             <svg
+              style="fill: #ffa500"
+              class="about-icon"
               xmlns="http://www.w3.org/2000/svg"
               xmlns:xlink="http://www.w3.org/1999/xlink"
               id="body_1"
@@ -225,8 +237,9 @@ p.Path('all_client_invoices.json').write_text(json.dumps(invoices, indent=2))
             </svg>
           </a>
 
-          <a href="https://github.com/zevaverbach">
+          <a style="color: #ffa500" href="https://github.com/zevaverbach">
             <svg
+              style="fill: #ffa500"
               class="about-icon"
               width="24"
               height="24"
