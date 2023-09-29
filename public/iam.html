@@ -7,6 +7,7 @@
     <meta name="keywords" content="programming, devops, architecture, AWS" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="robots" content="index, follow" />
+    <meta name="color-scheme" content="dark light" />
 
     <meta property="og:title" content="Iterative IAM-ing" />
     <meta property="og:url" content="https://zev.averba.ch/iam" />
@@ -415,7 +416,7 @@ sts:DecodeAuthorizationMessage action
       defer
     ></script>
     <script>
-      window.onload = function () {
+      document.addEventListener("DOMContentLoaded", (event) => {
         let imgs = document.getElementsByTagName("img");
 
         for (let i = 0; i < imgs.length; i++) {
@@ -446,7 +447,7 @@ sts:DecodeAuthorizationMessage action
             console.log("set data-theme to light");
           }
         });
-      };
+      });
     </script>
     <script src="/static/prism-dark.js"></script>
   </body>

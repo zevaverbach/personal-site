@@ -117,7 +117,7 @@
 </div>
     <script src="https://cdn.usefathom.com/script.js" data-site="LWJFWQJS" defer></script>
 <script>
-    window.onload = function () {
+    document.addEventListener("DOMContentLoaded", event => {
         let imgs = document.getElementsByTagName('img');
 
         for (let i = 0; i < imgs.length; i++) {
@@ -146,7 +146,7 @@
                 console.log('set data-theme to light');
             }
         });
-    }
+    })
 </script>
   </body>
 </html>

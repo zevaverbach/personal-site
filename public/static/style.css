@@ -28,6 +28,29 @@
   --my-toc-link-color: #17191C;
   --my-svg-color: dodgerblue;
 }
+@media (prefers-color-scheme: light) {
+  :root {
+    --my-white: #fafafa;
+    --my-gray: #e8e6e3;
+    --my-black: #222;
+    --my-yellow: #fdfa72;
+    --my-blue: dodgerblue;
+    --my-dark-blue: #003c68;
+    --my-light-blue: #aeddff;
+    --my-really-light-blue: #eaf6ff;
+    --my-max-width: 750px;
+    --my-background-color: #fafafa;
+    --my-color: #222;
+    --my-link-color: dodgerblue;
+    --my-link-color-hover: dodgerblue;
+    --my-paragraph-link-color-hover: #003c68;
+    --my-heading-title-color: dodgerblue;
+    --my-logo-color: #222;
+    --my-paragraph-color: #222;
+    --my-toc-link-color: #17191C;
+    --my-svg-color: dodgerblue;
+  }
+}
 
 [data-theme="dark"] {
   --my-background-color: #222;
@@ -42,7 +65,24 @@
   --my-toc-link-color: #fafafa;
 }
 
-*, *::before, *::after {
+@media (prefers-color-scheme: dark) {
+  :root {
+    --my-background-color: #222;
+    --my-color: #fafafa;
+    --my-link-color: #aeddff;
+    --my-link-color-hover: #aeddff;
+    --my-svg-color: #aeddff;
+    --my-paragraph-link-color-hover: dodgerblue;
+    --my-heading-title-color: #aeddff;
+    --my-logo-color: #fafafa;
+    --my-paragraph-color: #fafafa;
+    --my-toc-link-color: #fafafa;
+  }
+}
+
+*,
+*::before,
+*::after {
   box-sizing: inherit;
   margin: 0;
   padding: 0;
@@ -96,7 +136,9 @@ h1 {
   font-weight: 900;
 }
 
-h1.title, h2, h3 {
+h1.title,
+h2,
+h3 {
   color: var(--my-heading-title-color);
 }
 
@@ -104,15 +146,16 @@ ul {
   margin-bottom: 2em;
 }
 
-li { 
-  margin-left: 3em; 
+li {
+  margin-left: 3em;
 }
 
 .footnotes li {
   margin-left: 2em;
 }
 
-li, li code {
+li,
+li code {
   font-size: calc(1em + .1vw);
   color: var(--my-paragraph-color);
 }
@@ -124,7 +167,7 @@ p {
 
 
 
-p:not(#about p) { 
+p:not(#about p) {
   line-height: 1.6em;
   margin: 1em 0;
 }
@@ -160,7 +203,8 @@ img {
   counter-reset: footnote;
 }
 
-.footnotes p, .footnotes li::before {
+.footnotes p,
+.footnotes li::before {
   font-size: calc(.8em + .1vw);
 }
 
@@ -172,12 +216,15 @@ img {
 .footnotes li::before {
   counter-increment: footnote;
   content: counter(footnote) ". ";
-  margin-right: 0.5em; /* Optional: add some spacing after the number */
+  margin-right: 0.5em;
+  /* Optional: add some spacing after the number */
 }
 
 
 
-#body, nav, #toc {
+#body,
+nav,
+#toc {
   max-width: var(--my-max-width);
   margin: 0 auto !important;
   clear: both;
@@ -200,7 +247,7 @@ img {
   align-items: center;
 }
 
-#about p{
+#about p {
   font-size: calc(1em + .1vw);
 }
 
@@ -236,7 +283,8 @@ h1.title {
   padding-bottom: 2vw;
 }
 
-#logo, h1.title {
+#logo,
+h1.title {
   grid-column: 1 / -1;
   font-weight: 900;
   max-width: var(--my-max-width);
@@ -288,7 +336,7 @@ nav div:not(:first-child) {
   font-size: calc(.5em + .1vw) !important;
 }
 
-.smol > a {
+.smol>a {
   text-underline-offset: 1px !important;
 }
 
@@ -300,8 +348,8 @@ nav div:not(:first-child) {
   text-decoration: none;
 }
 
-sup > a {
-text-decoration: none;
+sup>a {
+  text-decoration: none;
 }
 
 #footnotes * {

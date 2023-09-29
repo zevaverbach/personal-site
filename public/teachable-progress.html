@@ -10,6 +10,7 @@
     <meta name="keywords" content="teachable, JavaScript, scraping" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="robots" content="index, follow" />
+    <meta name="color-scheme" content="dark light" />
 
     <meta
       property="og:title"
@@ -193,7 +194,7 @@ function getMinutesAndSeconds(lengthString) {
       defer
     ></script>
     <script>
-      window.onload = function () {
+      document.addEventListener("DOMContentLoaded", (event) => {
         let imgs = document.getElementsByTagName("img");
 
         for (let i = 0; i < imgs.length; i++) {
@@ -224,7 +225,7 @@ function getMinutesAndSeconds(lengthString) {
             console.log("set data-theme to light");
           }
         });
-      };
+      });
     </script>
     <script src="/static/prism-dark.js"></script>
   </body>
