@@ -74,15 +74,18 @@
       <pre><code class="language-python">import avt_fresh
 import json as j
 import pathlib as p
+
 cl = avt_fresh.ApiClient(client_secret=&quot;...&quot;, client_id=&quot;...&quot;, redirect_uri=&quot;...&quot;, account_id=&quot;...&quot;)
 clients = cl.get_all_clients()
 client_ids = [c.client_id for c in clients]
 clients_json = []
+
 for client in clients:
     d = c._asdict()
     del d['email_contact_id_lookup']
     del d['contact_id_email_lookup']
     clients_json.append(d)
+
 p.Path('all_my_clients.json').write_text(j.dumps(clients_json, indent=2)) 
 </code></pre>
       <h2 style="color: #ffa500">
@@ -120,8 +123,10 @@ def get_and_serialize_all_invoices_for_client(client_id):
 
 clients = json.loads(p.Path('all_my_clients.json').read_text())
 invoices = {}
+
 for client_id in client_ids:
     invoices[client_id] = get_and_serialize_all_invoices_for_client(client_id)
+
 p.Path('all_client_invoices.json').write_text(json.dumps(invoices, indent=2)) 
 </code></pre>
       <h2 style="color: #ffa500">Future Improvements</h2>
