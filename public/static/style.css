@@ -114,6 +114,7 @@ p a:hover {
 code {
   font-family: "Dank Mono", Helvetica, sans-serif;
   font-size: calc(1.3em + .3vw);
+  color: rgb(122, 162, 247);
 }
 
 div.code-toolbar {
@@ -171,7 +172,14 @@ p:not(#about p) {
 
 .toc-row {
   padding-top: .6vw;
-  text-indent: 2em hanging;
+}
+
+.toc-row a {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  display:inline-block;
+  max-width: 100%;
 }
 
 .extra-space {
@@ -229,13 +237,13 @@ nav,
 }
 
 #about {
-  max-width: calc(var(--my-max-width) / 1.4);
-  padding-top: 3em;
+  max-width: var(--my-max-width);
   margin: 0 auto !important;
+  padding-top: 3em;
   clear: both;
   display: grid;
   grid-template-columns: 1fr 5fr;
-  grid-template-rows: 1fr;
+  grid-template-rows: 1fr 1fr;
   grid-column-gap: 18px;
   grid-row-gap: .5em;
   align-items: center;
@@ -254,12 +262,12 @@ nav,
   border-radius: 100%;
   width: calc(50px + 4vw);
   filter: grayscale(100%);
-  transition: filter .45s ease-in;
+  transition: filter .25s ease-in;
 }
 
 #about img:hover {
   filter: none;
-  transition: filter .45s ease-in;
+  transition: filter .25s ease-in;
 }
 
 svg {
@@ -268,7 +276,7 @@ svg {
 
 a {
   color: var(--my-link-color);
-  transition: color .2s ease-in;
+  transition: color .15s ease-in;
   text-underline-offset: 6px;
 }
 
@@ -333,6 +341,7 @@ nav div:not(:first-child) {
 .smol>a {
   text-underline-offset: 1px !important;
 }
+
 
 #links svg {
   margin-right: .2em;
