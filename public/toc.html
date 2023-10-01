@@ -146,6 +146,30 @@
 </div>
     <script src="https://cdn.usefathom.com/script.js" data-site="LWJFWQJS" defer></script>
 <script>
+    let upButtonIsBackButton = true;
+    const upButton = document.getElementById("up-button");
+    function handleUpButtonClick() {
+        if (upButtonIsBackButton) {
+            window.location.href = "";
+        } else {
+            document.documentElement.scrollTo({top: 0, behavior: 'smooth'});
+        }
+    }
+    document.addEventListener("scroll", handleScroll);
+    function handleScroll() {
+        const { scrollTop, clientHeight } = document.documentElement;
+        if (scrollTop === 0) {
+            upButtonIsBackButton = true;
+            upButton.style.transform = `rotate(-90deg)`;
+        } else {
+            upButtonIsBackButton = false;
+            if (scrollTop <= clientHeight) {
+                upButton.style.transform = `rotate(${(-Math.abs(scrollTop - clientHeight)/clientHeight)*90}deg)`;
+            } else {
+                upButton.style.transform = `rotate(0deg)`;
+            }
+        }
+    }
     document.addEventListener("DOMContentLoaded", event => {
         let imgs = document.getElementsByTagName('img');
 

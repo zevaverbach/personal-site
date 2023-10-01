@@ -353,6 +353,32 @@ sts:DecodeAuthorizationMessage action
         </ol>
       </section>
 
+      <a
+        id="up-button"
+        style="
+          transform: rotate(-90deg);
+          position: fixed;
+          width: calc(1.8em + 1.5vw);
+          height: calc(1.8em + 1.5vw);
+          right: 15vw;
+          bottom: 5vw;
+          cursor: pointer;
+        "
+        onclick="handleUpButtonClick()"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="#ffe01c"
+          class="w-6 h-6"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm.53 5.47a.75.75 0 00-1.06 0l-3 3a.75.75 0 101.06 1.06l1.72-1.72v5.69a.75.75 0 001.5 0v-5.69l1.72 1.72a.75.75 0 101.06-1.06l-3-3z"
+            clip-rule="evenodd"
+          />
+        </svg>
+      </a>
       <div id="about">
         <a style="grid-row: span 6" href="/"
           ><img
@@ -452,6 +478,32 @@ sts:DecodeAuthorizationMessage action
       defer
     ></script>
     <script>
+      let upButtonIsBackButton = true;
+      const upButton = document.getElementById("up-button");
+      function handleUpButtonClick() {
+        if (upButtonIsBackButton) {
+          window.location.href = "/toc";
+        } else {
+          document.documentElement.scrollTo({ top: 0, behavior: "smooth" });
+        }
+      }
+      document.addEventListener("scroll", handleScroll);
+      function handleScroll() {
+        const { scrollTop, clientHeight } = document.documentElement;
+        if (scrollTop === 0) {
+          upButtonIsBackButton = true;
+          upButton.style.transform = `rotate(-90deg)`;
+        } else {
+          upButtonIsBackButton = false;
+          if (scrollTop <= clientHeight) {
+            upButton.style.transform = `rotate(${
+              (-Math.abs(scrollTop - clientHeight) / clientHeight) * 90
+            }deg)`;
+          } else {
+            upButton.style.transform = `rotate(0deg)`;
+          }
+        }
+      }
       document.addEventListener("DOMContentLoaded", (event) => {
         let imgs = document.getElementsByTagName("img");
 
