@@ -6,14 +6,14 @@
 
 <head>
   <meta charset="utf-8" />
-  <title>Table of Contents</title>
-  <meta name="description" content="About zev Averbach" />
-  <meta name="keywords" content="Zev Averbach, python, programming, full-stack, learning, teaching, training" />
+  <title>Zev Averbach | Posts</title>
+  <meta name="description" content="Table of contents for Zev Averbach's blog" />
+  <meta name="keywords" content="Zev Averbach, projects, web development, automation, javascript, python, programming, full-stack" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="robots" content="index, follow" />
-  <meta property="og:title" content="Table of Contents" />
-  <meta property="og:url" content="http://127.0.0.1:8000/" />
-  <meta property="og:description" content="About zev Averbach" />
+  <meta property="og:title" content="Zev Averbach | Posts" />
+  <meta property="og:url" content="http://127.0.0.1:8000/projects" />
+  <meta property="og:description" content="Table of contents for Zev Averbach's blog" />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Zev Averbach" />
   <meta name="color-scheme" content="dark light">
@@ -22,7 +22,7 @@
   <link rel="stylesheet" href="/static/prism-dark.css?v=0" />
   <link rel="stylesheet" href="/static/style.css?v=0" />
   <meta name="theme-color" content="#209cee" />
-  <link rel="canonical" href="http://127.0.0.1:8000/" />
+  <link rel="canonical" href="http://127.0.0.1:8000/projects" />
   
 </head>
 
@@ -36,11 +36,13 @@
     
     <div id="nav-items">
     
-            <div class="nav-current-page">
-                
+    <a href="/">
+        <div class="nav-item-link">
+            
                 about
             </div>
             
+    </a>
 
     
     <a href="/projects">
@@ -51,35 +53,55 @@
     </a>
 
     
-    <a href="posts.html">
-        <div class="nav-item-link">
-            
+            <div class="nav-current-page">
+                
                 posts
             </div>
             
-    </a>
 </div>
     
   </div>
 </nav>
-  <div id="body">
-<img style="width: max(150px, 15vw);"
-    src="https://www.gravatar.com/avatar/fe783e04644862c30823614f31b9a996/?s=360"
-    alt="smiley picture of shaven-head Zev">
-<p>
-    Hi! My name is Zev. I'm a freelance software engineer specializing in
-    business automation. I'm also a husband, father, mentor, baseball coach, and pianist.
-</p>
-<p>
-    If you want, read about some <a href="/projects">
-        juicy projects</a> I've done, and <a href="/posts">
-        some other write-ups</a>.
-</p>
-<p>
-    Please feel free to reach out about contracts, tutoring, and full-time positions (zev at averba dot ch).
-</p>
-<div id="about-long">
-    <div id="links">
+  <div id="toc">
+    
+    <div data-uid="teachable-progress" class="toc-row">
+      <a href="/teachable-progress.html" style="color: #E41E26" title="Some quick JavaScript console scraping to determine how much longer the remaining content is in your Teachable course."
+        onMouseOver="this.style.color='var(--my-paragraph-link-color-hover)'"
+        onMouseOut="this.style.color='#E41E26'">How To Determine The Time Left in a Teachable Course</a>
+    </div>
+    
+    <div data-uid="freshbooks" class="toc-row">
+      <a href="/freshbooks.html" style="color: #ffa500" title="Using my Freshbooks API wrapper, download all your data in JSON format."
+        onMouseOver="this.style.color='var(--my-paragraph-link-color-hover)'"
+        onMouseOut="this.style.color='#ffa500'">How To Download All Your Freshbooks Clients and Invoices</a>
+    </div>
+    
+    <div data-uid="hotz" class="toc-row">
+      <a href="/hotz.html" style="color: #ffe01c" title="Listening notes from the 'Programming languages that everyone should learn' section of Lex Fridman Podcast"
+        onMouseOver="this.style.color='var(--my-paragraph-link-color-hover)'"
+        onMouseOut="this.style.color='#ffe01c'">George Hotz on Programming, AI, and the Future</a>
+    </div>
+    
+    <div data-uid="iam" class="toc-row">
+      <a href="/iam.html" style="color: #8FC33E" title="How to initially approach IAM."
+        onMouseOver="this.style.color='var(--my-paragraph-link-color-hover)'"
+        onMouseOut="this.style.color='#8FC33E'">Iterative IAM-ing</a>
+    </div>
+    
+    <div data-uid="oops" class="toc-row">
+      <a href="/oops.html" style="color: #734f96" title="Let's automate the encryption of secrets, even for publicly stored remote git repositories."
+        onMouseOver="this.style.color='var(--my-paragraph-link-color-hover)'"
+        onMouseOut="this.style.color='#734f96'">Oops, I Did It Again: Automatically Encrypting Secrets</a>
+    </div>
+    
+  </div>
+  <div id="about">
+  
+  <a style="grid-row: span 2;" href="/"><img id='portrait' src="https://www.gravatar.com/avatar/fe783e04644862c30823614f31b9a996/?s=360"
+      alt="smiley picture of shaven-head Zev"></a>
+  <p>Excitable software engineer. Constant builder, learner, and teacher. 🌼</p>
+  
+  <div id="links">
     <a style="color: #aeddff" href="static/resume.pdf">
         <svg style="fill: #aeddff" class="about-icon" width="24" height="24" xmlns="http://www.w3.org/2000/svg"
             fill-rule="evenodd" clip-rule="evenodd">
@@ -117,7 +139,6 @@
                 d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12" />
         </svg>
     </a>
-</div>
 </div>
 </div>
   <script>

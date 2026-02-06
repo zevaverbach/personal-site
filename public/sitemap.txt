@@ -1,6 +1,8 @@
-https://zev.averba.ch/
-https://zev.averba.ch/freshbooks
-https://zev.averba.ch/iam
-https://zev.averba.ch/oops
-https://zev.averba.ch/teachable-progress
-https://zev.averba.ch/toc
+http://127.0.0.1:8000/
+http://127.0.0.1:8000/freshbooks
+http://127.0.0.1:8000/hotz
+http://127.0.0.1:8000/iam
+http://127.0.0.1:8000/oops
+http://127.0.0.1:8000/posts
+http://127.0.0.1:8000/projects
+http://127.0.0.1:8000/teachable-progress

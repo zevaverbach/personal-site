@@ -1,27 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
-        <loc>https://zev.averba.ch/</loc>
-        <lastmod>2023-10-01T13:31:41.296Z</lastmod>
+        <loc>http://127.0.0.1:8000/</loc>
+        <lastmod>2026-02-06T05:57:05.537Z</lastmod>
     </url>
     <url>
-        <loc>https://zev.averba.ch/freshbooks</loc>
-        <lastmod>2023-10-01T13:31:41.016Z</lastmod>
+        <loc>http://127.0.0.1:8000/freshbooks</loc>
+        <lastmod>2026-02-06T05:57:05.457Z</lastmod>
     </url>
     <url>
-        <loc>https://zev.averba.ch/iam</loc>
-        <lastmod>2023-10-01T13:31:41.118Z</lastmod>
+        <loc>http://127.0.0.1:8000/hotz</loc>
+        <lastmod>2026-02-06T05:57:05.459Z</lastmod>
     </url>
     <url>
-        <loc>https://zev.averba.ch/oops</loc>
-        <lastmod>2023-10-01T13:31:41.193Z</lastmod>
+        <loc>http://127.0.0.1:8000/iam</loc>
+        <lastmod>2026-02-06T05:57:05.460Z</lastmod>
     </url>
     <url>
-        <loc>https://zev.averba.ch/teachable-progress</loc>
-        <lastmod>2023-10-01T13:31:41.242Z</lastmod>
+        <loc>http://127.0.0.1:8000/oops</loc>
+        <lastmod>2026-02-06T05:57:05.462Z</lastmod>
     </url>
     <url>
-        <loc>https://zev.averba.ch/toc</loc>
-        <lastmod>2023-10-01T13:31:41.340Z</lastmod>
+        <loc>http://127.0.0.1:8000/posts</loc>
+        <lastmod>2026-02-06T05:57:05.511Z</lastmod>
+    </url>
+    <url>
+        <loc>http://127.0.0.1:8000/projects</loc>
+        <lastmod>2026-02-06T05:57:05.526Z</lastmod>
+    </url>
+    <url>
+        <loc>http://127.0.0.1:8000/teachable-progress</loc>
+        <lastmod>2026-02-06T05:57:05.456Z</lastmod>
     </url>
 </urlset>
